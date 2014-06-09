@@ -55,7 +55,7 @@ class LocationLoader():
         temp_data.temp_imperial = Decimal(imperial_data[u'main'][u'temp'])
         temp_data.temp_min_metric = Decimal(metric_data[u'main'][u'temp_min'])
         temp_data.temp_max_metric = Decimal(metric_data[u'main'][u'temp_max'])
-        temp_data.temp_metric = Decimal(data[u'main'][u'temp'])
+        temp_data.temp_metric = Decimal(metric_data[u'main'][u'temp'])
         temp_data.location = Location.objects.get(city_id = loc.city_id)
         
         #Save temperature data
