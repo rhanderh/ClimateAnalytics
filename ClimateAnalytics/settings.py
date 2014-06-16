@@ -62,7 +62,7 @@ DATABASES = {
         'NAME': 'climateanalytics',
         'USER': 'climateuser',
         'PASSWORD': 'climate',
-        'HOST': '127.0.0.1',
+        'HOST': 'climatedb.cngea6lg67jw.us-west-2.rds.amazonaws.com',
         'PORT': '5432',
     }
 }

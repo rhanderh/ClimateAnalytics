@@ -27,5 +27,18 @@ class Temperature(models.Model):
     
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.temp_max_imperial)
+    
+class WindSpeed(models.Model):
+    wind_speed = models.DecimalField(max_digits=9,decimal_places=4)
+    wind_speed_imperial = models.DecimalField(max_digits=9,decimal_places=4)
+    wind_speed_metric = models.DecimalField(max_digits=9,decimal_places=4)
+    degree = models.DecimalField(max_digits=9,decimal_places=4)
+    degree_imperial = models.DecimalField(max_digits=9,decimal_places=4)
+    degree_metric = models.DecimalField(max_digits=9,decimal_places=4)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    location = models.ForeignKey(Location)
+
+    def __unicode__(self):  # Python 3: def __str__(self):
+        return str(self.wind_speed)
 
     

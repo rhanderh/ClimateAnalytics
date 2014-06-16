@@ -1,4 +1,4 @@
-from climate.models import Location, Temperature
+from climate.models import Location, Temperature, WindSpeed
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 import json
@@ -29,6 +29,7 @@ class LocationLoader():
         #Prep model objects
         loc = Location()
         temp_data = Temperature()
+        wind_data = WindSpeed()
 
         #Assign location fields from collected json data
         loc.longitude = data[u'coord'][u'lon']
@@ -61,10 +62,17 @@ class LocationLoader():
         #Save temperature data
         temp_data.save()
         
+        #Assign windspeed fields from collected json data
+        wind_data.location = Location.objects.get(city_id = loc.city_id)
+        wind_data.wind_speed = Decimal(data[u'wind'][u'speed'])
+        wind_data.degree = Decimal(data[u'wind'][u'deg'])
+        wind_data.wind_speed_imperial = Decimal(imperial_data[u'wind'][u'speed'])
+        wind_data.degree_imperial = Decimal(imperial_data[u'wind'][u'deg'])
+        wind_data.wind_speed_metric = Decimal(metric_data[u'wind'][u'speed'])
+        wind_data.degree_metric = Decimal(metric_data[u'wind'][u'deg'])
         
- 
-        
-        
+        #Save windspeed data
+        wind_data.save()
             
             
             

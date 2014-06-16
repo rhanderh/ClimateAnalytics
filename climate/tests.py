@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 
 #Application Imports
 from climate.ETL import LocationLoader
-from climate.models import Location,Temperature
+from climate.models import Location,Temperature, WindSpeed
 
 class LocationLoaderTest(TestCase):
     
@@ -45,9 +45,12 @@ class LocationLoaderTest(TestCase):
         if Location.objects.filter(city_name='Pittsburgh').exists():
             Pitt = Location.objects.filter(city_name='Pittsburgh')
             Temp = Temperature.objects.get(location=Pitt)
+            Wind = WindSpeed.objects.get(location=Pitt)
             Orig_count = Temp.count()
+            Orig_wind = Wind.count()
         else:
             Orig_count = 0
+            Orig_wind = 0
         
         #Save a new entry
         loc_loader = LocationLoader()
@@ -56,8 +59,10 @@ class LocationLoaderTest(TestCase):
         #Assert location and tempset have been entered
         Pitt = Location.objects.get(city_name='Pittsburgh')
         Temp_count = Pitt.temperature_set.all().count()
+        Wind_count = Pitt.windspeed_set.all().count()
         self.assertTrue(Location.objects.filter(city_name='Pittsburgh').exists())
         self.assertTrue(Temp_count == Orig_count + 1)
+        self.assertTrue(Wind_count == Orig_wind + 1)
        
         
         
