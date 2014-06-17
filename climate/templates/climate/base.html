@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    	{% load staticfiles %}
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+   	 <!-- Bootstrap -->
+   		<link href="{% static 'climate/css/bootstrap-fluid-adj.css' %}" rel="stylesheet">
+    	<link href="{% static 'climate/css/bootstrap.min.css' %}" rel="stylesheet" media="screen">
+    	<link href="{% static 'climate/css/bootstrap-responsive.css' %}" rel="stylesheet">
+    
+    <title>ClimAlytics</title>
+    </head>
+
+    <body>
+         {% block body_block %}You have landed on a template-less page.{% endblock %}
+   
+   
+    <script src="{% static 'js/jquery-2.0.3.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    </body>
+    
+</html>
+
