@@ -40,5 +40,10 @@ class WindSpeed(models.Model):
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return str(self.wind_speed)
-
+    
+class Advection(models.Model):
+    advection = models.DecimalField(max_digits=9,decimal_places=4)
+    advection_type = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    location = models.ForeignKey(Location)
     

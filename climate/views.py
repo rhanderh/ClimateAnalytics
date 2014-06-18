@@ -13,3 +13,7 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return Location.objects.all()
+    
+    
+   # def get_temperature(self,location):
+   #     return Temperature.objects.get(location=location)
