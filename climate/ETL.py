@@ -19,6 +19,12 @@ class LocationLoader():
         data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q=' + name + '&units=imperial'))
         return data
     
+    def get_open_weather_city_hist(self, name):
+        data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day'))
+        return data
+    
+    
+    
     def save_data_city(self, name):
         
         #Call weather api's to collect data
@@ -75,7 +81,19 @@ class LocationLoader():
         wind_data.save()
             
             
-            
-            
-            
+class LocationLoaderHist():       
+        
+        def get_open_weather_city_hist(self, name):
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day'))
+            return data 
+        
+        def get_open_weather_city_hist_metric(self, name):
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day' + '&units=metric'))
+            return data 
+        
+        def get_open_weather_city_hist_imperial(self, name):
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day' + '&units=imperial'))
+            return data 
+        
+        
             

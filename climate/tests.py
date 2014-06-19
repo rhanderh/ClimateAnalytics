@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 
 #Application Imports
-from climate.ETL import LocationLoader
+from climate.ETL import LocationLoader, LocationLoaderHist
 from climate.models import Location,Temperature, WindSpeed
 
 class LocationLoaderTest(TestCase):
@@ -33,7 +33,7 @@ class LocationLoaderTest(TestCase):
     def test_get_open_weather_city_imperial(self):
         print('Validate successful call of IMPERIAL weather data by city')
         loc_loader = LocationLoader()
-        data = loc_loader.get_open_weather_city_metric('Los Angeles,ca')
+        data = loc_loader.get_open_weather_city_imperial('Los Angeles,ca')
         print('Data Received from API Call')
         print(data)
         self.assertEqual(data[u'name'], u'Los Angeles')
@@ -64,7 +64,34 @@ class LocationLoaderTest(TestCase):
         self.assertTrue(Temp_count == Orig_count + 1)
         self.assertTrue(Wind_count == Orig_wind + 1)
        
+
+class LocationLoaderHistTest(TestCase):
+
+    def test_get_open_weather_city_hist(self):
+        print('Validate successful history call of weather data by city')
+        loc_loader = LocationLoaderHist()
+        data = loc_loader.get_open_weather_city_hist('Los Angeles,ca')
+        print('Data Received from API Call-------------------')
+        print(data)
+        self.assertEqual(len(data[u'list']), 48)
+
+    
+    def test_get_open_weather_city_hist_metric(self):
+        print('Validate successful call of METRIC weather data by city')
+        loc_loader = LocationLoaderHist()
+        data = loc_loader.get_open_weather_city_hist_metric('Los Angeles,ca')
+        print('Data Received from API Call-------------------')
+        print(data)
+        self.assertEqual(len(data[u'list']), 48)
         
+   
+    def test_get_open_weather_city_hist_imperial(self):
+        print('Validate successful call of IMPERIAL weather data by city')
+        loc_loader = LocationLoaderHist()
+        data = loc_loader.get_open_weather_city_hist_imperial('Los Angeles,ca')
+        print('Data Received from API Call-------------------')
+        print(data)
+        self.assertEqual(len(data[u'list']), 48)
         
     
         
