@@ -5,15 +5,30 @@
 <div class="hero-unit">
 <h1>ClimAlytics</h1>
 
-{% if all_locations_list %}
-<ul>
+<p>List of locations and all of the associated daily high temperatures in imperial.  This is a test.</p>
+
+
 	{% for location in all_locations_list %}
-		<li>{{ location.city_name }}</li>
-    {% endfor %}
-</ul>
-{% else %}
-	<p>No locations are in the database.</p>
-{% endif %}
+		<h2>{{ location.city_name }}</h2>
+		<ul>
+		{% for temp in location.temperature_set.all %}
+		<li>{{ temp.temp_max_imperial }}</li>
+		</ul>
+	{% endfor %}
+{% endfor %}
+
+
+<p>List of locations and all of the associated daily wind speeds.  This is a test.</p>
+
+
+	{% for location in all_locations_list %}
+		<h2>{{ location.city_name }}</h2>
+		<ul>
+		{% for wind in location.windspeed_set.all %}
+		<li>{{ wind.wind_speed }}</li>
+		</ul>
+	{% endfor %}
+{% endfor %}
 
 </div>
 

@@ -73,7 +73,7 @@ class LocationLoaderHistTest(TestCase):
         data = loc_loader.get_open_weather_city_hist('Los Angeles,ca')
         print('Data Received from API Call-------------------')
         print(data)
-        self.assertEqual(len(data[u'list']), 48)
+        self.assertEqual(len(data[u'list']), data[u'cnt'])
 
     
     def test_get_open_weather_city_hist_metric(self):
@@ -82,7 +82,7 @@ class LocationLoaderHistTest(TestCase):
         data = loc_loader.get_open_weather_city_hist_metric('Los Angeles,ca')
         print('Data Received from API Call-------------------')
         print(data)
-        self.assertEqual(len(data[u'list']), 48)
+        self.assertEqual(len(data[u'list']), data[u'cnt'])
         
    
     def test_get_open_weather_city_hist_imperial(self):
@@ -91,7 +91,39 @@ class LocationLoaderHistTest(TestCase):
         data = loc_loader.get_open_weather_city_hist_imperial('Los Angeles,ca')
         print('Data Received from API Call-------------------')
         print(data)
-        self.assertEqual(len(data[u'list']), 48)
+        self.assertEqual(len(data[u'list']), data[u'cnt'])
+        
+    def test_save_data_city_hist(self):
+        
+        loc_loader = LocationLoader()
+        loc_loader.save_data_city('Pittsburgh,pa')
+        
+        
+        print('Validate what is saved to the database matches what is received by JSON')
+        #Current count of location and temp set for that location
+        if Location.objects.filter(city_name='Pittsburgh').exists():
+            Pitt = Location.objects.filter(city_name='Pittsburgh')
+            Temp = Temperature.objects.get(location=Pitt)
+            Wind = WindSpeed.objects.get(location=Pitt)
+            Orig_count = 0
+            Orig_wind = 0
+        else:
+            Orig_count = 0
+            Orig_wind = 0
+        
+        #Save a new entry
+        loc_loader = LocationLoaderHist()
+        loc_loader.save_data_city_hist('Pittsburgh,pa')
+        
+        #Assert location and tempset have been entered
+        Pitt = Location.objects.get(city_name='Pittsburgh')
+        Temp_count = Pitt.temperature_set.all().count()
+        Wind_count = Pitt.windspeed_set.all().count()
+        self.assertTrue(Location.objects.filter(city_name='Pittsburgh').exists())
+        print Temp_count
+        print Wind_count
+        self.assertTrue(Temp_count >= Orig_count + 30)
+        self.assertTrue(Wind_count >= Orig_wind + 30)
         
     
         
