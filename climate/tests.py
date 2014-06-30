@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 #Application Imports
 from climate.ETL import LocationLoader, LocationLoaderHist
 from climate.models import Location,Temperature, WindSpeed
+from climate import views
 
 class LocationLoaderTest(TestCase):
     

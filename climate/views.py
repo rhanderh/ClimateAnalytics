@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.urlresolvers import reverse
+from django.core import serializers
 from django.http import Http404
 from django.views import generic
 
@@ -12,9 +13,10 @@ from climate.Forms import CityHistForm, CityForm
 def CityHistoryGraphs(request, id):
     try:
         location = Location.objects.get(pk=id)
+        json_temp = serializers.serialize("json", location.temperature_set.all())
     except Location.DoesNotExist:
         raise Http404
-    return render(request, 'climate/citydetail.html', {'location': location})
+    return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp})
 
     
 def HistoryGraph(id):

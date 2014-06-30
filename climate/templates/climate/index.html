@@ -9,7 +9,7 @@
 <p>List of locations and all of the associated daily high temperatures in imperial.  This is a test.</p>
 
 
-	{% for location in all_locations_list %}
+   {% for location in all_locations_list %}
 		<h2>{{ location.city_name }}</h2>
 		<ul>
 		{% for temp in location.temperature_set.all %}
