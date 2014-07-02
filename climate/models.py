@@ -1,6 +1,7 @@
 from django.db import models
 import json
 import urllib2
+import datetime
 
 
 class Location(models.Model):
@@ -22,7 +23,7 @@ class Temperature(models.Model):
     temp_min_metric = models.DecimalField(max_digits=9,decimal_places=4)
     temp_max_metric = models.DecimalField(max_digits=9,decimal_places=4)
     temp_metric = models.DecimalField(max_digits=9,decimal_places=4)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=datetime.datetime.now)
     location = models.ForeignKey(Location)
     
     def __unicode__(self):  # Python 3: def __str__(self):
@@ -35,7 +36,7 @@ class WindSpeed(models.Model):
     degree = models.DecimalField(max_digits=9,decimal_places=4)
     degree_imperial = models.DecimalField(max_digits=9,decimal_places=4)
     degree_metric = models.DecimalField(max_digits=9,decimal_places=4)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=datetime.datetime.now)
     location = models.ForeignKey(Location)
 
     def __unicode__(self):  # Python 3: def __str__(self):
@@ -44,6 +45,6 @@ class WindSpeed(models.Model):
 class Advection(models.Model):
     advection = models.DecimalField(max_digits=9,decimal_places=4)
     advection_type = models.CharField(max_length=50)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(default=datetime.datetime.now)
     location = models.ForeignKey(Location)
     

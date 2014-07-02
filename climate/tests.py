@@ -112,9 +112,12 @@ class LocationLoaderHistTest(TestCase):
             Orig_count = 0
             Orig_wind = 0
         
+        pitt = Location.objects.get(city_name='Pittsburgh')
+        id = Pitt.city_id
+        
         #Save a new entry
         loc_loader = LocationLoaderHist()
-        loc_loader.save_data_city_hist('Pittsburgh,pa')
+        loc_loader.save_data_city_hist(id)
         
         #Assert location and tempset have been entered
         Pitt = Location.objects.get(city_name='Pittsburgh')
