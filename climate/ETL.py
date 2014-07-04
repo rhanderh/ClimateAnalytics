@@ -4,12 +4,13 @@ from decimal import Decimal
 import json
 import urllib2
 import datetime
+import calendar
 
 class LocationLoader():
 
     #Capture location data for a particular city by name
     def get_open_weather_city(self, name):
-        data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q=' + name))
+        data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q=' + name + '&type'))
         return data
     
     def get_open_weather_city_metric(self, name):
@@ -33,17 +34,37 @@ class LocationLoader():
            
             
 class LocationLoaderHist():       
+      
+        def get_open_weather_city_hist(self, city_id):
+            start = datetime.datetime.now() + datetime.timedelta(-30)
+            end = datetime.datetime.now()
         
-        def get_open_weather_city_hist(self, name):
-            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day'))
+            start_unx = str(calendar.timegm(start.utctimetuple()))
+            end_unx = str(calendar.timegm(end.utctimetuple()))
+        
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx))
             return data 
         
-        def get_open_weather_city_hist_metric(self, name):
-            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day' + '&units=metric'))
+        def get_open_weather_city_hist_metric(self, city_id):
+            
+            start = datetime.datetime.now() + datetime.timedelta(-30)
+            end = datetime.datetime.now()
+        
+            start_unx = str(calendar.timegm(start.utctimetuple()))
+            end_unx = str(calendar.timegm(end.utctimetuple()))
+            
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx + '&units=metric'))
             return data 
         
-        def get_open_weather_city_hist_imperial(self, name):
-            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?q=' + name + '&type=day' + '&units=imperial'))
+        def get_open_weather_city_hist_imperial(self, city_id):
+            
+            start = datetime.datetime.now() + datetime.timedelta(-30)
+            end = datetime.datetime.now()
+        
+            start_unx = str(calendar.timegm(start.utctimetuple()))
+            end_unx = str(calendar.timegm(end.utctimetuple()))
+            
+            data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx + '&units=imperial'))
             return data 
         
         def save_data_city_hist(self, name):
@@ -131,6 +152,8 @@ class DataSaverLocation():
             temp_data.temp_max_metric = (Decimal(data[u'main'][u'temp_max']) - Decimal(273.5000))
             temp_data.temp_metric = (Decimal(data[u'main'][u'temp']) - Decimal(273.5000))
             temp_data.location = Location.objects.get(city_id = city)
+            temp_data.timestamp = datetime.datetime.fromtimestamp(int(data[u'dt'])).strftime('%Y-%m-%d %H:%M:%S')
+
         
         #Save temperature data
             temp_data.save()
@@ -143,7 +166,8 @@ class DataSaverLocation():
             wind_data.degree_imperial = Decimal(data[u'wind'][u'deg'])
             wind_data.wind_speed_metric = Decimal(data[u'wind'][u'speed'])
             wind_data.degree_metric = Decimal(data[u'wind'][u'deg'])
-        
+            wind_data.timestamp = datetime.datetime.fromtimestamp(int(data[u'dt'])).strftime('%Y-%m-%d %H:%M:%S')
+
         #Save windspeed data
             wind_data.save()
             
