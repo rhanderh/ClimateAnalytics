@@ -24,12 +24,14 @@ def ForecastGraphs(request, id):
     try:
         location = Location.objects.get(pk=id)
         windspeed = WindSpeed.objects.get(pk=id)
+        advection = Advection.objects.get(pk=id)
         json_temp = serializers.serialize("json", location.temperature_set.all())
         json_wind = serializers.serialize("json", WindSpeed.objects.filter(location_id=id), fields=('wind_speed'), indent =3)
-        
+        json_advection = serializers.serialize("json", Advection.objects.filter(location_id=id), fields=('advection'), indent =2)
+        json_temp = float(json_temp[256:262])+float(json_advection[81:85])
     except Location.DoesNotExist:
         raise Http404
-    return render(request, 'climate/forecastdetail.html', {'location': location, 'json_temp' : json_temp, 'windspeed': json_wind[87:92]})
+    return render(request,'climate/forecastdetail.html',{'location': location, 'json_temp': json_temp , 'windspeed': json_wind[87:92],'advection': json_advection[81:85]})
 
     
 def HistoryGraph(id):
