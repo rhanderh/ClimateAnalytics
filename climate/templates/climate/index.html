@@ -2,9 +2,50 @@
 
 {% block body_block %}
 
- <div class="container">
+
  	
-<h1>ClimAlytics</h1>
+  <div class="jumbotron">
+      <div class="container">
+        <h1>ClimAlytics</h1>
+        <p>ClimAlytics aims to create predictable climate visualization (CV)
+        	 of a geographical area based on historical data for the geographical area of interest.<br>
+        	  </p>
+        <p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+      </div>
+    </div>
+    
+ 
+    <div class="container">
+ 
+    
+         <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Locations</h2>
+          <p>The following locations are available in the ClimAlytics database: <br>
+          	   {% for location in all_locations_list %}
+				<ul>{{ location.city_name }}</ul>
+			   {% endfor %}
+          	</p>
+          <a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Historicals</h2>
+          <p> View historical temperature trend data for a particular location graphically.</p>
+          <p><a class="btn btn-default" href="/history/" role="button">View Historicals &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Forecasting</h2>
+          <p>View predictive temperature forecasting based on historical data.</p>
+          <p><a class="btn btn-default" href="/forecast/" role="button">View Predictions &raquo;</a></p>
+        </div>
+      </div>
+
+</div>
+    
+<!--
+ 	
+
 
 <p>List of locations and all of the associated daily high temperatures in imperial.  This is a test.</p>
 
@@ -31,6 +72,8 @@
 	{% endfor %}
 {% endfor %}
 
-</div>
+
 
 {% endblock %}
+
+-->
