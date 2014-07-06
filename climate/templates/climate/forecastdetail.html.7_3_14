@@ -1,0 +1,35 @@
+
+{% extends 'climate/base.html' %}
+
+{% block body_block %}
+
+<font size="3" color="blue"><strong> Increased aerosols in sulfate aerosols in the atmosphere could offset some of the warming resulting from
+    increased greeenhouse gas concentration so there is a lot of uncertainty in temperature forecast"</strong> </font
+>
+<h2>{{location.city_name}}</h2>
+
+		<ul>
+	        {% for temp in location.temperature_set.all %}
+		  <li>{{ temp.temp_max_imperial }}</li>
+		</ul>
+                {% endfor %}
+
+
+<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
+     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
+     forecast for next day = today's temperature multiplied by its advection  --> 
+
+
+<p><font size="3" color="blue"> <strong>&nbsp&nbsp&nbsp&nbspTomorrow forecast:</strong></font> </p> 
+<p><br><strong>&nbsp&nbsp&nbsp&nbspwindspeed=</strong> {{windspeed}}  </br> </p>
+<p><br><strong>&nbsp&nbsp&nbsp&nbsptemperature gradient=</strong> {{temperaturegradient}}0.006  </br></p>
+<p><br><strong>&nbsp&nbsp&nbsp&nbspadvection=</strong> {{advection}}  </br> </p>
+<p><br><strong>&nbsp&nbsp&nbsp&nbspsurface temperature=</strong> {{json_temp}}  </br></p>
+
+
+
+
+
+
+
+{% endblock %}
