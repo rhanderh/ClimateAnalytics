@@ -15,7 +15,7 @@ import datetime
 def CityHistoryGraphs(request, id):
     try:
         location = Location.objects.get(pk=id)
-        json_temp = serializers.serialize("json", location.temperature_set.all())
+        json_temp = serializers.serialize("json", location.temperature_set.all().order_by('timestamp'))
     except Location.DoesNotExist:
         raise Http404
     return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp})
@@ -41,6 +41,13 @@ def HistoryGraph(id):
 
 class IndexView(generic.ListView):
     template_name = 'climate/index.html'
+    context_object_name = 'all_locations_list'
+
+    def get_queryset(self):
+        return Location.objects.all()
+    
+class AboutView(generic.ListView):
+    template_name = 'climate/about.html'
     context_object_name = 'all_locations_list'
 
     def get_queryset(self):
