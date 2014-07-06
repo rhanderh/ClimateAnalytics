@@ -1,9 +1,11 @@
 #Django Imports
 from django.test import TestCase
 import datetime
+import pytz
 from django.utils import timezone
 from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.db.models import Max
 
 #Application Imports
 from climate.ETL import LocationLoader, LocationLoaderHist
@@ -71,7 +73,9 @@ class LocationLoaderHistTest(TestCase):
     def test_get_open_weather_city_hist(self):
         print('Validate successful history call of weather data by city')
         loc_loader = LocationLoaderHist()
-        data = loc_loader.get_open_weather_city_hist('Los Angeles,ca')
+        start_date_test = datetime.datetime.now() + datetime.timedelta(-30)
+        end_date_test = datetime.datetime.now()
+        data = loc_loader.get_open_weather_city_hist('5367929', start_date_test, end_date_test)
         print('Data Received from API Call-------------------')
         print(data)
         self.assertEqual(len(data[u'list']), data[u'cnt'])
@@ -80,7 +84,8 @@ class LocationLoaderHistTest(TestCase):
     def test_get_open_weather_city_hist_metric(self):
         print('Validate successful call of METRIC weather data by city')
         loc_loader = LocationLoaderHist()
-        data = loc_loader.get_open_weather_city_hist_metric('Los Angeles,ca')
+        start_date_test = datetime.datetime.now() + datetime.timedelta(-30)
+        data = loc_loader.get_open_weather_city_hist_metric('5367929', start_date_test)
         print('Data Received from API Call-------------------')
         print(data)
         self.assertEqual(len(data[u'list']), data[u'cnt'])
@@ -89,7 +94,8 @@ class LocationLoaderHistTest(TestCase):
     def test_get_open_weather_city_hist_imperial(self):
         print('Validate successful call of IMPERIAL weather data by city')
         loc_loader = LocationLoaderHist()
-        data = loc_loader.get_open_weather_city_hist_imperial('Los Angeles,ca')
+        start_date_test = datetime.datetime.now() + datetime.timedelta(-30)
+        data = loc_loader.get_open_weather_city_hist_imperial('5367929', start_date_test)
         print('Data Received from API Call-------------------')
         print(data)
         self.assertEqual(len(data[u'list']), data[u'cnt'])
@@ -113,11 +119,13 @@ class LocationLoaderHistTest(TestCase):
             Orig_wind = 0
         
         pitt = Location.objects.get(city_name='Pittsburgh')
-        id = Pitt.city_id
+        id = pitt.city_id
+        start_date_test = datetime.datetime.now() + datetime.timedelta(-30)
+        end_date_test = datetime.datetime.now()
         
         #Save a new entry
         loc_loader = LocationLoaderHist()
-        loc_loader.save_data_city_hist(id)
+        loc_loader.save_data_city_hist(id, start_date_test, end_date_test)
         
         #Assert location and tempset have been entered
         Pitt = Location.objects.get(city_name='Pittsburgh')
@@ -129,5 +137,35 @@ class LocationLoaderHistTest(TestCase):
         self.assertTrue(Temp_count >= Orig_count + 30)
         self.assertTrue(Wind_count >= Orig_wind + 30)
         
+    def test_loop_all_hist(self):
+        
+        #Prep the DB for Pittsburgh
+        loc_loader = LocationLoader()
+        loc_loader.save_data_city('Pittsburgh,pa')
+        
+        #prep timeframe variables
+        load  = LocationLoaderHist()
+        pitt = Location.objects.get(city_name='Pittsburgh')
+        startb = datetime.datetime.now() + datetime.timedelta(-30)
+        
+        end_unaware = datetime.datetime.now() + datetime.timedelta(-1)
+        end = end_unaware.replace(tzinfo=pytz.UTC)
+        
+        #clear out conflicting data
+        pitt.temperature_set.all().delete()
+        pitt.windspeed_set.all().delete()
+        
+        load.loop_all_hist('Pittsburgh',startb)
+        
+        #validate
+        wind_max_dict = pitt.windspeed_set.all().aggregate(Max('timestamp'))
+        temp_max_dict = pitt.temperature_set.all().aggregate(Max('timestamp')) 
+        
+        wind_max = wind_max_dict['timestamp__max']
+        temp_max = temp_max_dict['timestamp__max']
+        
+        
+        self.assertTrue( (wind_max - end) <= datetime.timedelta(days = 1))
+        self.assertTrue( (temp_max - end) <= datetime.timedelta(days = 1))
     
         

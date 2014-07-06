@@ -1,9 +1,11 @@
 from climate.models import Location, Temperature, WindSpeed
 from django.core.exceptions import ValidationError
+from django.db.models import Max
 from decimal import Decimal
 import json
 import urllib2
 import datetime
+import pytz
 import calendar
 
 class LocationLoader():
@@ -35,9 +37,9 @@ class LocationLoader():
             
 class LocationLoaderHist():       
       
-        def get_open_weather_city_hist(self, city_id):
-            start = datetime.datetime.now() + datetime.timedelta(-30)
-            end = datetime.datetime.now()
+        def get_open_weather_city_hist(self, city_id, start_in, end_in):
+            start = start_in
+            end = end_in
         
             start_unx = str(calendar.timegm(start.utctimetuple()))
             end_unx = str(calendar.timegm(end.utctimetuple()))
@@ -45,9 +47,9 @@ class LocationLoaderHist():
             data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx))
             return data 
         
-        def get_open_weather_city_hist_metric(self, city_id):
+        def get_open_weather_city_hist_metric(self, city_id, start_in):
             
-            start = datetime.datetime.now() + datetime.timedelta(-30)
+            start = start_in
             end = datetime.datetime.now()
         
             start_unx = str(calendar.timegm(start.utctimetuple()))
@@ -56,9 +58,9 @@ class LocationLoaderHist():
             data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx + '&units=metric'))
             return data 
         
-        def get_open_weather_city_hist_imperial(self, city_id):
+        def get_open_weather_city_hist_imperial(self, city_id, start_in):
             
-            start = datetime.datetime.now() + datetime.timedelta(-30)
+            start = start_in
             end = datetime.datetime.now()
         
             start_unx = str(calendar.timegm(start.utctimetuple()))
@@ -67,10 +69,16 @@ class LocationLoaderHist():
             data = json.load(urllib2.urlopen('http://api.openweathermap.org/data/2.5/history/city?id=' + city_id + '&type=hour&start=' + start_unx + '&end=' + end_unx + '&units=imperial'))
             return data 
         
-        def save_data_city_hist(self, name):
+        def save_data_city_hist(self, id, start_in, end_in):
+            
+            start = start_in
+            end = end_in 
+        
+            start_unx = str(calendar.timegm(start.utctimetuple()))
+            end_unx = str(calendar.timegm(end.utctimetuple()))
         
         #Call weather api's to collect data
-            data = self.get_open_weather_city_hist(name)
+            data = self.get_open_weather_city_hist(id, start_in, end_in)
 
             
             data_save = DataSaverLocation()
@@ -79,6 +87,33 @@ class LocationLoaderHist():
             while i < data[u'cnt']:
                 data_save.commit_data_hist(data[u'city_id'],data[u'list'][i])
                 i = i + 1
+                
+        
+        #Call this function only when a locations weather data set is empty to perform a full historical load of data 
+        def loop_all_hist(self, name, start_in):
+            
+            #Establish timeframe
+            start = start_in
+            end_unaware = datetime.datetime.now() + datetime.timedelta(-1)
+            end = end_unaware.replace(tzinfo=pytz.UTC)
+            
+            #Establish Location parameters
+            location = Location.objects.get(city_name=name)   
+            id_in = location.city_id
+            
+            
+            self.save_data_city_hist(id_in, start, end)
+            
+            max_date = location.temperature_set.all().aggregate(Max('timestamp'))
+            latest = max_date['timestamp__max']
+            
+            while (end - latest) > datetime.timedelta(days = 1):
+                self.save_data_city_hist(id_in, latest, end)
+                max_date = location.temperature_set.all().aggregate(Max('timestamp'))
+                latest = max_date['timestamp__max']
+
+        
+        
             
 class DataSaverLocation():           
         def commit_data(self,data,metric_data,imperial_data):
