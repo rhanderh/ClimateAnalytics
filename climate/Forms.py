@@ -16,8 +16,11 @@ class CityHistForm(forms.Form):
     
 class CityForm(ModelForm):
     
+    UNIT_CHOICE=(('1','Metric'),('2','Imperial'),('3','Standard'))
+    
     city_name = forms.ChoiceField(choices=[(location.id, location.city_name) for location in Location.objects.all()])
-
+    units = forms.ChoiceField(choices=UNIT_CHOICE)
+    
     class Meta:
         model=Location
         fields = ['city_name']

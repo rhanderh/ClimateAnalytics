@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^your-name/', views.get_name, name='your-name'),
     url(r'^thanks/', views.get_thanks, name='thanks'),
     url(r'^(?P<location_id>[0-9]+)/history_graph/$', views.HistoryGraph, name='history_graph'),
-    url(r'^(?P<id>[0-9]+)/citydetail/$', views.CityHistoryGraphs, name='citydetail'),
+    url(r'^(?P<id>[0-9]+)/(?P<units>[0-9])/citydetail/$', views.CityHistoryGraphs, name='citydetail'),
     url(r'^(?P<id>[0-9]+)/forecastdetail/$', views.ForecastGraphs, name='forecastdetail'),
     url(r'^admin/', include(admin.site.urls)),
 )

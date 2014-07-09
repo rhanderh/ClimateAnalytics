@@ -12,13 +12,15 @@ import datetime
 
 # Create your views here.
 
-def CityHistoryGraphs(request, id):
+def CityHistoryGraphs(request, id, units):
     try:
         location = Location.objects.get(pk=id)
         json_temp = serializers.serialize("json", location.temperature_set.all().order_by('timestamp'))
+        units = str(units)
+        
     except Location.DoesNotExist:
         raise Http404
-    return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp})
+    return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp, 'units': units})
 
 def ForecastGraphs(request, id):
     try:
@@ -64,7 +66,7 @@ def HistoryCityInput(request):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
-            return HttpResponseRedirect('/' + form.cleaned_data['city_name'] + '/citydetail/')
+            return HttpResponseRedirect('/' + form.cleaned_data['city_name'] + '/' + form.cleaned_data['units'] +  '/citydetail/')
 
     # if a GET (or any other method) we'll create a blank form
     else:

@@ -6,6 +6,16 @@
 
 
 <h2>{{location.city_name}}</h2>
+
+<p>Hourly maximum temperature for {{location.city_name}}.</p>
+
+{% if units == '1' %}
+	<p>Units = Metric</p>
+{% elif units == '2' %}
+	<p>Units = Imperial</p>
+{% else %}
+	<p>Units = Scientific</p>
+{% endif %}
 <!--
 		<ul>
 		{% for temp in location.temperature_set.all %}
@@ -29,7 +39,14 @@
 			for (var i = 0; i < temp_set.length; i++) {
     			var time = new Date(temp_set[i].fields.timestamp);
     			var newNumber1 = time; 
-    			var newNumber2 = temp_set[i].fields.temp_max_imperial;
+    			
+    			{% if units == '1'%}
+    				var newNumber2 = temp_set[i].fields.temp_max_metric;
+    			{% elif units == '2'%}
+    				var newNumber2 = temp_set[i].fields.temp_max_imperial;
+    			{% else %}
+    				var newNumber2 = temp_set[i].fields.temp_max;
+    			{% endif %}
     			dataset.push([newNumber1, newNumber2]);
 			}
 			//Create scale functions
