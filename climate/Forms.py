@@ -17,9 +17,13 @@ class CityHistForm(forms.Form):
 class CityForm(ModelForm):
     
     UNIT_CHOICE=(('1','Metric'),('2','Imperial'),('3','Standard'))
+    TOPIC_CHOICE=(('1','Temperature'),('2','Windspeed'))
     
+    topic = forms.ChoiceField(choices=TOPIC_CHOICE)
     city_name = forms.ChoiceField(choices=[(location.id, location.city_name) for location in Location.objects.all()])
     units = forms.ChoiceField(choices=UNIT_CHOICE)
+    start_date = forms.DateField(widget=forms.TextInput(attrs={ 'class':'datepicker'}))
+    end_date = forms.DateField(widget=forms.TextInput(attrs= {'class':'datepicker'}))
     
     class Meta:
         model=Location

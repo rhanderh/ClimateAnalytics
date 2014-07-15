@@ -1,0 +1,135 @@
+
+{% extends 'climate/base.html' %}
+
+{% block body_block %}
+
+
+
+<h2>{{location.city_name}}</h2>
+
+<p>Hourly windspeed for {{location.city_name}}.</p>
+
+{% if units == '1' %}
+	<p>Units = Metric</p>
+{% elif units == '2' %}
+	<p>Units = Imperial</p>
+{% else %}
+	<p>Units = Scientific</p>
+{% endif %}
+<!--
+		<ul>
+		{% for temp in location.temperature_set.all %}
+		<li>{{ temp.wind_speed_imperial }}</li>
+		</ul>
+	{% endfor %}
+
+-->
+<div id ="graphb">
+</div>
+	
+<script type = "text/javascript">
+
+			var w = 1000;
+			var h = 400;
+			var padding = 40;
+			
+			//Dynamic, random dataset
+			var dataset = [];
+			var wind_set = {{ json_wind|safe }}
+			for (var i = 0; i < wind_set.length; i++) {
+    			var time = new Date(wind_set[i].fields.timestamp);
+    			var newNumber1 = time; 
+    			
+    			{% if units == '1'%}
+    				var newNumber2 = wind_set[i].fields.wind_speed_metric;
+    			{% elif units == '2'%}
+    				var newNumber2 = wind_set[i].fields.wind_speed_imperial;
+    			{% else %}
+    				var newNumber2 = wind_set[i].fields.wind_speed;
+    			{% endif %}
+    			dataset.push([newNumber1, newNumber2]);
+			}
+			//Create scale functions
+			var xScale = d3.time.scale()
+								 .domain([d3.min(dataset, function(d) { return d[0]; }), d3.max(dataset, function(d) { return d[0]; })])
+								 .range([padding, w - padding * 2]);
+
+			var yScale = d3.scale.linear()
+								 .domain([d3.min(dataset, function(d) { return d[1]; }), d3.max(dataset, function(d) { return d[1]; })])
+								 .range([h - padding, padding]);
+								 
+			var rScale = d3.scale.linear()
+							.domain([0, d3.max(dataset, function(d) {return d[1]; })])
+							.range([2, 5]);
+							
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+						.ticks(8);
+						
+			var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+                  
+            //Line Variable for Line Graph
+            var lineFunc = d3.svg.line()
+            	.x(function(d) {return xScale(d[0]); })
+            	.y(function(d) {return yScale(d[1]); })
+            	.interpolate('linear');
+	
+			//Create SVG element
+			var vis = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+						
+			
+			//Add path
+						
+			
+/*
+			vis.selectAll("circle")
+			   .data(dataset)
+			   .enter()
+			   .append("circle")
+			   .attr("cx", function(d) {
+			   		return xScale(d[0]);
+			   })
+			   .attr("cy", function(d) {
+			   		return yScale(d[1]);
+			   })
+			   .attr("r", function(d) {
+			   		return rScale(d[1]);
+			   });
+			   */
+			  
+
+
+    		vis.append("g")
+    			.attr("class","axis") //Assign "axis" class
+    			.attr("transform", "translate(0," + (h - padding) + ")")
+    			.call(xAxis);
+    			
+    		//Create Y axis
+			vis.append("g")
+    			.attr("class", "axis")
+    			.attr("transform", "translate(" + padding + ",0)")
+    			.call(yAxis);
+    			
+    		vis.append('svg:path')
+  				.attr('d', lineFunc(dataset))
+  				.attr('stroke', 'blue')
+  				.attr('stroke-width', 2)
+  				.attr('fill', 'none');
+    			
+    		
+    				
+			
+
+</script>
+
+
+
+
+{% endblock %}
