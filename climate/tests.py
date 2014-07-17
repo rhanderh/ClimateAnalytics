@@ -56,6 +56,7 @@ class LocationLoaderTest(TestCase):
         else:
             Orig_count = 0
             Orig_wind = 0
+            Orig_advec = 0
         
         #Save a new entry
         loc_loader = LocationLoader()
@@ -68,6 +69,7 @@ class LocationLoaderTest(TestCase):
         self.assertTrue(Location.objects.filter(city_name='Pittsburgh').exists())
         self.assertTrue(Temp_count == Orig_count + 1)
         self.assertTrue(Wind_count == Orig_wind + 1)
+        
        
 
 class LocationLoaderHistTest(TestCase):

@@ -166,6 +166,8 @@ class DataSaverLocation():
         
         #Save windspeed data
             wind_data.save()
+            
+        #Assign advection fields based on collected data
         
         
         def commit_data_hist(self,city,data):
@@ -205,6 +207,8 @@ class DataSaverLocation():
 
         #Save windspeed data
             wind_data.save()
+            
+        #Assign advection fields based on collected data
             
         def commit_data_loc(self,data):
         
