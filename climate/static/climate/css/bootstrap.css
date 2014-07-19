@@ -739,6 +739,9 @@ pre code {
   margin-right: auto;
   margin-left: auto;
 }
+
+
+
 @media (min-width: 768px) {
   .container {
     width: 750px;
@@ -1146,7 +1149,7 @@ pre code {
     right: 50%;
   }
   .col-md-pull-5 {
-    right: 41.66666667%;
+    right: 41.66666667%;ƒ
   }
   .col-md-pull-4 {
     right: 33.33333333%;

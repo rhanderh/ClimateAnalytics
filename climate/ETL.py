@@ -183,7 +183,7 @@ class DataSaverLocation():
             temp_data.temp_max = Decimal(data[u'main'][u'temp_max'])
             temp_data.temp = Decimal(data[u'main'][u'temp'])
             temp_data.temp_min_imperial = Decimal(Decimal(1.8) * (Decimal(data[u'main'][u'temp_min']) - Decimal(273.5000)) + Decimal(32.0000))
-            temp_data.temp_max_imperial = Decimal(Decimal(1.8) * (Decimal(data[u'main'][u'temp_min']) - Decimal(273.5000)) + Decimal(32.0000))
+            temp_data.temp_max_imperial = Decimal(Decimal(1.8) * (Decimal(data[u'main'][u'temp_max']) - Decimal(273.5000)) + Decimal(32.0000))
             temp_data.temp_imperial = Decimal(Decimal(1.8) * (Decimal(data[u'main'][u'temp_min']) - Decimal(273.5000)) + Decimal(32.0000))
             temp_data.temp_min_metric = (Decimal(data[u'main'][u'temp_min']) - Decimal(273.5000))
             temp_data.temp_max_metric = (Decimal(data[u'main'][u'temp_max']) - Decimal(273.5000))

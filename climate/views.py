@@ -14,7 +14,7 @@ import pytz
 
 # Create your views here.
 
-def CityHistoryGraphs(request, id, units, start_date, end_date):
+def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
     try:
         location = Location.objects.get(pk=id)
         print('I am the ' + start_date)
@@ -51,7 +51,7 @@ def CityHistoryGraphs(request, id, units, start_date, end_date):
         
     except Location.DoesNotExist:
         raise Http404
-    return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp, 'units': units})
+    return render(request, 'climate/citydetail.html', {'location': location, 'json_temp' : json_temp, 'units': units, 'high_low': high_low})
 
 
 def CityHistoryGraphsWind(request, id, units, start_date, end_date):
@@ -145,8 +145,8 @@ def HistoryCityInput(request):
                                             + str(form.cleaned_data['start_date']) + '/' + str(form.cleaned_data['end_date']) + '/citydetailwind/')                
             else:
                 # redirect to a new URL:
-                return HttpResponseRedirect('/' + form.cleaned_data['city_name'] + '/' + form.cleaned_data['units'] + '/' 
-                                            + str(form.cleaned_data['start_date']) + '/' + str(form.cleaned_data['end_date']) + '/citydetail/')
+                return HttpResponseRedirect('/' + form.cleaned_data['city_name'] + '/' + form.cleaned_data['units'] + '/' + str(form.cleaned_data['high_low'])
+                                           + '/' + str(form.cleaned_data['start_date']) + '/' + str(form.cleaned_data['end_date']) + '/citydetail/')
             
 
     # if a GET (or any other method) we'll create a blank form
