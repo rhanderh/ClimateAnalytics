@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.urlresolvers import reverse
 from django.core import serializers
+import json
 from django.http import Http404
 from django.views import generic
 from django.db.models import Max, Min
@@ -10,8 +11,21 @@ from climate.models import Temperature, Location, WindSpeed, Advection
 from climate.Forms import CityHistForm, CityForm
 
 import datetime
+from datetime import date
+from decimal import Decimal
 import pytz
 
+#json encoder for dictionary objects
+class MyEncoder1(json.JSONEncoder):
+    def default(self, obj):
+        
+        obj['timestamp'] = datetime.datetime.combine(obj['timestamp'],datetime.datetime.min.time())
+        obj['timestamp'] = obj['timestamp'].strftime('%Y-%m-%dT00:00:00')
+        obj['temp_max'] = str(obj['temp_max'])
+        
+
+        return super(MyEncoder1, self).encode(obj)
+    
 # Create your views here.
 
 def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
@@ -44,9 +58,19 @@ def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
         else:
             end - max_time
         
+        main_set = location.temperature_set.filter(timestamp__range=[start,end]).order_by('timestamp')
         
+       # if aggregation == 1: 
+        json_temp = serializers.serialize("json", main_set)
+        #else:
+         #   main_set = main_set.extra({'timestamp':"date(timestamp)"}).values('timestamp').annotate(temp_max=Max('temp_max'), 
+          #                                                                                          temp_min=Min('temp_min'), 
+           #                                                                                         temp_max_metric=Max('temp_max_metric', 
+            #                                                                                        temp_min_metric=Min('temp_min_metric'), 
+             #                                                                                       temp_max_imperial=Max('temp_max_imperial'), 
+              #                                                                                      temp_min_imperial=Min('temp_min_imperial')))
+            #json_temp = json.dumps(main_set, default=str)
         
-        json_temp = serializers.serialize("json", location.temperature_set.filter(timestamp__range=[start,end]).order_by('timestamp'))
         units = str(units)
         
     except Location.DoesNotExist:
@@ -84,8 +108,9 @@ def CityHistoryGraphsWind(request, id, units, start_date, end_date):
         else:
             end - max_time
         
+        main_set = location.windspeed_set.filter(timestamp__range=[start,end]).order_by('timestamp')
               
-        json_wind = serializers.serialize("json", location.windspeed_set.filter(timestamp__range=[start,end]).order_by('timestamp'))
+        json_wind = serializers.serialize("json", main_set)
         units = str(units)
         
     except Location.DoesNotExist:
@@ -100,7 +125,7 @@ def ForecastGraphs(request, id):
         windspeed = WindSpeed.objects.get(pk=id)
         advection = Advection.objects.get(pk=id)
         json_temp = serializers.serialize("json", location.temperature_set.all())
-        json_ctemp = serializers.serialize("json", location.temperature_set.all())
+        json_ctemp = serializers.serialize("json", locadefintion.temperature_set.all())
         json_wind = serializers.serialize("json", WindSpeed.objects.filter(location_id=id), fields=('wind_speed'), indent =3)
         json_advection = serializers.serialize("json", Advection.objects.filter(location_id=id), fields=('advection'), indent =2)
         json_temp = float(json_temp[256:262])+float(json_advection[81:85])
