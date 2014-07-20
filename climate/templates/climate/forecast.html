@@ -2,18 +2,19 @@
 
 {% block body_block %}
 
-<h1>Forecast Temperature by City</h1>
+
 
  <div class="container">
  	
-
+<h1>Forecast Temperature by City</h1>
+<br>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 
 <form action="/forecast/" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
     <input type="submit" value="Submit" />
 </form>
 

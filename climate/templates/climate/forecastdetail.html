@@ -33,12 +33,12 @@ td, th {
 }
 </style
 
-<head>
-    <meta charset="utf-8">
-    <title>Forecast Chart</title>
-    <link rel="stylesheet" type="text/css" href="../../static/forecast/css/styles.css"/>
-    <script type="text/javascript" src="../../static/forecast/lib/d3.js"></script>
-</head>
+
+
+<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
+     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
+     forecast for next day = today's temperature multiplied by its advection  --> 
+
 
 <h2>{{location.city_name}}</h2>
 
@@ -49,13 +49,11 @@ td, th {
                 {% endfor %}
 
 
-{{json_temp_range}}
 
 <!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
      wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
      forecast for next day = today's temperature multiplied by its advection  --> 
 
-<body>
    <table style="margin-left:50px;" border="3">
       <caption>City Climate Description</caption>
     <tr>
@@ -81,7 +79,48 @@ td, th {
     <td>  </td>
    </tr>
   </table>
-</body>
+  
+  
+     <table style="margin-left:45px;" border="1"; bgcolor :"#808000">
+    <caption>Current temperature in other cities</caption>
+    <tr>>
+  <p><br> <th> NY </th></br> </p>
+          <th> LA </th>
+          <th> HOU </th>
+          <th> MIA </th>
+          <th> PHI </th>
+          <th> Boston </th>
+          <th> SEA </th>
+          <th> DENVER </th>
+           <th> SF </th>
+    </tr>
+   <tr>
+    <td> {{jsonNYct}} </td>
+    <td> {{jsonLAct}} </td>
+    <td> {{jsonHOUct}} </td>
+    <td> {{jsonMIAct}} </td>
+    <td> {{jsonPHIct}} </td>
+    <td> {{jsonBOSct}} </td>
+    <td> {{jsonSEAct}} </td>
+    <td> {{jsonDENct}} </td>
+    <td> {{jsonSFct}} </td>
+   </tr>
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   
+   </tr>
+  </table>
+  
+  
+
 
 
 <!-- ticks line -->
@@ -90,6 +129,7 @@ td, th {
         Forecast Computation Results
     </button>
 </div>
+</body>
 
   <script type="text/javascript">
     var height = 300,
@@ -285,46 +325,6 @@ td, th {
 
 </script>
 
-
-<body>
-   <table style="margin-left:45px;" border="1"; bgcolor :"#808000">
-    <caption>Current temperature in other cities</caption>
-    <tr>>
-  <p><br> <th> NY </th></br> </p>
-          <th> LA </th>
-          <th> HOU </th>
-          <th> MIA </th>
-          <th> PHI </th>
-          <th> Boston </th>
-          <th> SEA </th>
-          <th> DENVER </th>
-           <th> SF </th>
-    </tr>
-   <tr>
-    <td> {{jsonNYct}} </td>
-    <td> {{jsonLAct}} </td>
-    <td> {{jsonHOUct}} </td>
-    <td> {{jsonMIAct}} </td>
-    <td> {{jsonPHIct}} </td>
-    <td> {{jsonBOSct}} </td>
-    <td> {{jsonSEAct}} </td>
-    <td> {{jsonDENct}} </td>
-    <td> {{jsonSFct}} </td>
-   </tr>
-   <tr>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-   
-   </tr>
-  </table>
-</body>
 
 
 

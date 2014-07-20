@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.urlresolvers import reverse
 from django.core import serializers
+import json
 from django.http import Http404
 from django.views import generic
 from django.db.models import Max, Min
@@ -11,11 +12,24 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
 from climate.models import Temperature, Location, WindSpeed, Advection
-from climate.Forms import CityHistForm, CityForm
+from climate.Forms import CityHistForm, CityForm, ForecastForm
 
 import datetime
+from datetime import date
+from decimal import Decimal
 import pytz
 
+#json encoder for dictionary objects
+class MyEncoder1(json.JSONEncoder):
+    def default(self, obj):
+        
+        obj['timestamp'] = datetime.datetime.combine(obj['timestamp'],datetime.datetime.min.time())
+        obj['timestamp'] = obj['timestamp'].strftime('%Y-%m-%dT00:00:00')
+        obj['temp_max'] = str(obj['temp_max'])
+        
+
+        return super(MyEncoder1, self).encode(obj)
+    
 # Create your views here.
 
 def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
@@ -48,9 +62,19 @@ def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
         else:
             end - max_time
         
+        main_set = location.temperature_set.filter(timestamp__range=[start,end]).order_by('timestamp')
         
+       # if aggregation == 1: 
+        json_temp = serializers.serialize("json", main_set)
+        #else:
+         #   main_set = main_set.extra({'timestamp':"date(timestamp)"}).values('timestamp').annotate(temp_max=Max('temp_max'), 
+          #                                                                                          temp_min=Min('temp_min'), 
+           #                                                                                         temp_max_metric=Max('temp_max_metric', 
+            #                                                                                        temp_min_metric=Min('temp_min_metric'), 
+             #                                                                                       temp_max_imperial=Max('temp_max_imperial'), 
+              #                                                                                      temp_min_imperial=Min('temp_min_imperial')))
+            #json_temp = json.dumps(main_set, default=str)
         
-        json_temp = serializers.serialize("json", location.temperature_set.filter(timestamp__range=[start,end]).order_by('timestamp'))
         units = str(units)
         
     except Location.DoesNotExist:
@@ -88,8 +112,9 @@ def CityHistoryGraphsWind(request, id, units, start_date, end_date):
         else:
             end - max_time
         
+        main_set = location.windspeed_set.filter(timestamp__range=[start,end]).order_by('timestamp')
               
-        json_wind = serializers.serialize("json", location.windspeed_set.filter(timestamp__range=[start,end]).order_by('timestamp'))
+        json_wind = serializers.serialize("json", main_set)
         units = str(units)
         
     except Location.DoesNotExist:
@@ -102,11 +127,12 @@ def ForecastGraphs(request, id):
     
       
     try:
+        #Location for user selection
         location = Location.objects.get(pk=id)
-        json_temp_range= request.session.get('start_date')
-        end= request.session.get('end_date')
        
         
+        
+        #Locations for current temps in other cities
         NY = Location.objects.get(city_name='New York')
         LA = Location.objects.get(city_name='Los Angeles')
         HOU = Location.objects.get(city_name='Houston')
@@ -116,9 +142,18 @@ def ForecastGraphs(request, id):
         SEA = Location.objects.get(city_name='Seattle')
         DEN = Location.objects.get(city_name='Denver')
         SF = Location.objects.get(city_name='San Francisco')
+        
         windspeed = WindSpeed.objects.get(pk=id)
         advection = Advection.objects.get(pk=id)
+        
+        #Serialization of the json temperature set
+        #Do Math on Python object first before converting to JSON
+        
         json_temp = serializers.serialize("json", location.temperature_set.all())
+        
+        
+        #Don't grab the full temperature sets here - just grab the latest temp for today from the DB
+
         jsonNY    = serializers.serialize("json", NY.temperature_set.all())        
         jsonLA    = serializers.serialize("json", LA.temperature_set.all())
         jsonHOU    = serializers.serialize("json", HOU.temperature_set.all())
@@ -128,6 +163,7 @@ def ForecastGraphs(request, id):
         jsonSEA    = serializers.serialize("json", SEA.temperature_set.all())
         jsonDEN    = serializers.serialize("json", DEN.temperature_set.all())
         jsonSF    = serializers.serialize("json",  SF.temperature_set.all())
+        
         json_ctemp = serializers.serialize("json", location.temperature_set.all())
 
         jsonNYct = serializers.serialize("json", NY.temperature_set.all())
@@ -139,10 +175,11 @@ def ForecastGraphs(request, id):
         jsonSEAct = serializers.serialize("json", SEA.temperature_set.all())
         jsonDENct = serializers.serialize("json", DEN.temperature_set.all())
         jsonSFct = serializers.serialize("json", SF.temperature_set.all())
+        
         try:
            json_gradient = (float(json_temp[259:266])-float(5.000))/100
         except ValueError:
-           json_gradient = (float(json_temp[256:262])-float(5.000))/100
+           json_gradient = (float(json_temp[256:262])-float(5.000))/100 
   
         json_wind = serializers.serialize("json", WindSpeed.objects.filter(location_id=id), fields=('wind_speed'), indent =3)
         json_advection = serializers.serialize("json", Advection.objects.filter(location_id=id), fields=('advection'), indent =2)
@@ -153,10 +190,9 @@ def ForecastGraphs(request, id):
     except Location.DoesNotExist:
         raise Http404
     return render(request,'climate/forecastdetail.html',{'location': location, 'json_temp': json_temp , 'windspeed': json_wind[87:92],'advection': json_advection[81:85], 'json_ctemp' : json_ctemp[256:262],
-                                                          'json_gradient' : json_gradient, 'json_temp_range': json_temp_range, 'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262], 
-                                                           'jsonHOUct': jsonHOUct[256:262], 'jsonMIAct': jsonMIAct[255:262],'jsonPHIct': jsonPHIct[256:262],
+                                                          'json_gradient' : json_gradient, 'json_temp_range': json_temp_range, 'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262],'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262],'jsonHOUct': jsonHOUct[256:262], 'jsonMIAct': jsonMIAct[255:262],'jsonPHIct': jsonPHIct[256:262],
                                                            'jsonBOSct': jsonBOSct[256:262], 'jsonSEAct': jsonSEAct[256:262], 'jsonDENct': jsonDENct[255:262], 
-                                                             })
+                                                           })
 
     
 def HistoryGraph(id):
@@ -210,7 +246,7 @@ def forecastInput(request):
        # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = CityForm(request.POST)
+        form = ForecastForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -220,7 +256,7 @@ def forecastInput(request):
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = CityForm()
+        form = ForecastForm()
 
     return render(request, 'climate/forecast.html', {'form': form})
 
