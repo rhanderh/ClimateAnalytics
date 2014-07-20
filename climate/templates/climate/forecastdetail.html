@@ -3,9 +3,9 @@
 
 {% block body_block %}
 
-<font size="3" color="blue"><strong> Increased aerosols in sulfate aerosols in the atmosphere could offset some of the warming resulting from
+<!--<font size="3" color="blue"><strong> Increased aerosols in sulfate aerosols in the atmosphere could offset some of the warming resulting from
     increased greeenhouse gas concentration so there is a lot of uncertainty in temperature forecast"</strong> </font
->
+> -->
 <style> /* set the CSS */
 body { font: 14px Arial;}
 path {
@@ -20,6 +20,16 @@ stroke: grey;
 opcaity: 0.7;
 stroke-width: 1;
 shape-rendering: crispEdges;
+}
+
+td, th {
+  padding: 1px 4px;
+}
+.line{
+
+  fill: none;
+  stroke: url (#line-gradient);
+  stroke-width: 2px;
 }
 </style
 
@@ -43,22 +53,87 @@ shape-rendering: crispEdges;
      wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
      forecast for next day = today's temperature multiplied by its advection  --> 
 
+<body>
+   <table style="margin-left:50px;" border="3">
+      <caption>City Climate Description</caption>
+    <tr>
+     <p><br> <th> windspeed </th></br> </p>
+     <th> Today Temperature </th>
+     <th> Gradient </th>
+     <th> Advection </th>
+     <th> Tomorrow Forecast </th>
+    </tr>
+   <tr>
+    <td>{{windspeed}} </td>
+    <td> {{json_ctemp}} </td>
+    <td> {{json_gradient}} </td>
+    <td> {{advection}} </td>
+    <td> {{ json_temp}} </td>
 
-<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent windspeed=</strong> {{windspeed}}  </br> </p>
-<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent temperature=</strong> {{json_ctemp}}  </br></p>
-<p><br><strong>&nbsp&nbsp&nbsp&nbsptemperature gradient=</strong> {{temperaturegradient}}0.006  </br></p>
-<p><br><strong>&nbsp&nbsp&nbsp&nbspadvection=</strong> {{advection}}  </br> </p>
-<p><br><br><br></p>
-<p><font size="3" color="blue"> <strong>&nbsp&nbsp&nbsp&nbspTomorrow forecast:</strong></font> </p>
-
-<p><br><strong>&nbsp&nbsp&nbsp&nbspsurface temperature=</strong> {{json_temp}}  </br></p>
-<p><br><br><br></p>
-
-
-
+   </tr>
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   </tr>
+  </table>
+</body>
 
 
+<!-- ticks line -->
+ <div class="control-group">
+    <button onclick="renderAll('bottom')">
+        Forecast Computation Results
+    </button>
+</div>
 
+  <script type="text/javascript">
+    var height = 300,
+        width = 500,
+        margin = 50,
+        axisWidth = width - 2 * margin;
+
+    var svg = d3.select("body").append("svg")
+            .attr("class", "axis")
+            .attr("width", width)
+            .attr("height", height);
+
+    var scale = d3.scale.linear().domain([0, {{json_ctemp}}]).range([0, axisWidth]);
+
+    var axis = d3.svg.axis()
+            .scale(scale)
+            .ticks(5)
+            .tickSubdivide(5) // <-A
+            .tickPadding(10) // <-B
+            .tickFormat(function(v){ // <-C
+                return v + "%";
+            });
+
+    svg.append("g")
+        .attr("transform", function(){
+            return "translate(" + margin + "," + margin + ")";
+        })
+        .call(axis);
+</script>
+
+       <caption>Dynamic Measurement</caption>
+
+
+
+<!--<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent windspeed=</strong> {{windspeed}}  </br> </p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent temperature=</strong> {{json_ctemp}}  </br></p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbsptemperature gradient=</strong> {{temperaturegradient}}0.006  </br></p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspadvection=</strong> {{advection}}  </br> </p>
+//<p><br><br><br></p>
+//<p><font size="3" color="blue"> <strong>&nbsp&nbsp&nbsp&nbspTomorrow forecast:</strong></font> </p>
+
+
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspsurface temperature=</strong> {{json_temp}}  </br></p>
+//<p><br><br><br></p>
+
+-->
 <script type="text/javascript">
     var width = 500,
         height = 500,
@@ -112,6 +187,25 @@ shape-rendering: crispEdges;
 
     renderAxes(svg);
 
+/*    svg.append("linearGradient")
+       .attr("id", "line-gradient")
+       .attr("gradientUnits", "userSpaceOnUse")
+       .attr("x1", 0).attr("y",y(0))
+       .attr(:x2",0).attr("y2",y(1000))
+     .selectAll("stop")
+       .data([
+         {offset: "0%", color: "red"},
+          {offset: "30%", color: "red"},
+          {offset: "45%", color: "black"},
+           {offset: "55%", color: "black"},
+            {offset: "60%", color: "lawngreen"},
+            {offset: "100%", color: "lawngreen"},
+        ])
+     .enter().append("stop")
+         .attr("offset",function(d) { return d.offset;})
+         .attr("stop-color",function(d) { return d.color;});
+*/
+
     function renderAxes(svg){ // <-G
         var xAxis = d3.svg.axis()
                 .scale(d3.scale.linear()
@@ -131,17 +225,18 @@ shape-rendering: crispEdges;
             })
             .call(xAxis);
 
+
          svg.append("text")
             .attr("x", 240)
             .attr("y", 480) 
             .style("tetx-anchor","middle")
-            .text("Daily"); 
+            .text("Daily Forecast"); 
 
          svg.append("text")
             .attr("x", 240)
             .attr("y", 497)
             .style("text-anchor","middle")
-            .text("Temperature vs Time");
+            .text("");
 
         svg.append("g")
             .attr("class", "axis")
@@ -186,7 +281,54 @@ shape-rendering: crispEdges;
         return height - 2 * margin;
     }
 
-
 </script>
 
+
+<body>
+   <table style="margin-left:45px;" border="1"; bgcolor :"#808000">
+    <caption>Current temperature in other cities</caption>
+    <tr>>
+  <p><br> <th> NY </th></br> </p>
+          <th> LA </th>
+          <th> HOU </th>
+          <th> MIA </th>
+          <th> PHI </th>
+          <th> Boston </th>
+          <th> SEA </th>
+          <th> DENVER </th>
+           <th> SF </th>
+    </tr>
+   <tr>
+    <td> {{jsonNYct}} </td>
+    <td> {{jsonLAct}} </td>
+    <td> {{jsonHOUct}} </td>
+    <td> {{jsonMIAct}} </td>
+    <td> {{jsonPHIct}} </td>
+    <td> {{jsonBOSct}} </td>
+    <td> {{jsonSEAct}} </td>
+    <td> {{jsonDENct}} </td>
+    <td> {{jsonSFct}} </td>
+   </tr>
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   
+   </tr>
+  </table>
+</body>
+
+
+
+
+
+
 {% endblock %}
+
+
