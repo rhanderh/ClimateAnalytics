@@ -12,6 +12,8 @@ from climate.ETL import LocationLoader, LocationLoaderHist
 from climate.models import Location,Temperature, WindSpeed
 from climate import views
 
+
+
 class LocationLoaderTest(TestCase):
     
     
@@ -54,6 +56,7 @@ class LocationLoaderTest(TestCase):
         else:
             Orig_count = 0
             Orig_wind = 0
+            Orig_advec = 0
         
         #Save a new entry
         loc_loader = LocationLoader()
@@ -66,6 +69,7 @@ class LocationLoaderTest(TestCase):
         self.assertTrue(Location.objects.filter(city_name='Pittsburgh').exists())
         self.assertTrue(Temp_count == Orig_count + 1)
         self.assertTrue(Wind_count == Orig_wind + 1)
+        
        
 
 class LocationLoaderHistTest(TestCase):
@@ -167,5 +171,14 @@ class LocationLoaderHistTest(TestCase):
         
         self.assertTrue( (wind_max - end) <= datetime.timedelta(days = 1))
         self.assertTrue( (temp_max - end) <= datetime.timedelta(days = 1))
+        
+class ViewTest(TestCase):
     
+    def test_index_view(self):
+        """
+        Validate successful load of the homepage
+        """
+        response = self.client.get(reverse('climate:index'))
+        self.assertEqual(response.status_code, 200)
+        # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
         

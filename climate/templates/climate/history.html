@@ -2,9 +2,14 @@
 
 {% block body_block %}
 
-<h1>Historical Temperature Trends by City</h1>
+<div class="container">
 
- <div class="container">
+<h1>Historical Analysis by City</h1>
+</div>
+<br>
+<div class="container">
+<div id="form_border">
+ 
  	
 
 
@@ -13,11 +18,16 @@
 
 <form action="/history/" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
     <input type="submit" value="Submit" />
+    
+
+
 </form>
 
 
 </div>
+</div>
+
 
 {% endblock %}

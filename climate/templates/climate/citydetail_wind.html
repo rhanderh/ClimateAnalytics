@@ -5,9 +5,10 @@
 
 <div class="container">
 
+
 <h2>{{location.city_name}}</h2>
 
-<p>Hourly temperature for {{location.city_name}}.</p>
+<p>Hourly windspeed for {{location.city_name}}.</p>
 
 {% if units == '1' %}
 	<p>Units = Metric</p>
@@ -19,14 +20,13 @@
 <!--
 		<ul>
 		{% for temp in location.temperature_set.all %}
-		<li>{{ temp.temp_max_imperial }}</li>
+		<li>{{ temp.wind_speed_imperial }}</li>
 		</ul>
 	{% endfor %}
 
 -->
 <div id ="graphb">
 </div>
-
 </div>
 	
 <script type = "text/javascript">
@@ -37,29 +37,18 @@
 			
 			//Dynamic, random dataset
 			var dataset = [];
-			var temp_set = {{ json_temp|safe }}
-			for (var i = 0; i < temp_set.length; i++) {
-    			var time = new Date(temp_set[i].fields.timestamp);
+			var wind_set = {{ json_wind|safe }}
+			for (var i = 0; i < wind_set.length; i++) {
+    			var time = new Date(wind_set[i].fields.timestamp);
     			var newNumber1 = time; 
     			
-    			{% if high_low == '2'%}
-	    			{% if units == '1'%}
-	    				var newNumber2 = temp_set[i].fields.temp_max_metric;
-	    			{% elif units == '2'%}
-	    				var newNumber2 = temp_set[i].fields.temp_max_imperial;
-	    			{% else %}
-	    				var newNumber2 = temp_set[i].fields.temp_max;
-	    			{% endif %}
-	    		{% else %}
-	    			{% if units == '1'%}
-	    				var newNumber2 = temp_set[i].fields.temp_min_metric;
-	    			{% elif units == '2'%}
-	    				var newNumber2 = temp_set[i].fields.temp_min_imperial;
-	    			{% else %}
-	    				var newNumber2 = temp_set[i].fields.temp_min;
-	    			{% endif %}
-	    		{% endif %}
-	    		
+    			{% if units == '1'%}
+    				var newNumber2 = wind_set[i].fields.wind_speed_metric;
+    			{% elif units == '2'%}
+    				var newNumber2 = wind_set[i].fields.wind_speed_imperial;
+    			{% else %}
+    				var newNumber2 = wind_set[i].fields.wind_speed;
+    			{% endif %}
     			dataset.push([newNumber1, newNumber2]);
 			}
 			//Create scale functions
