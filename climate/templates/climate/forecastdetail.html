@@ -31,14 +31,14 @@ td, th {
   stroke: url (#line-gradient);
   stroke-width: 2px;
 }
-</style
+</style>
 
-<head>
-    <meta charset="utf-8">
-    <title>Forecast Chart</title>
-    <link rel="stylesheet" type="text/css" href="../../static/forecast/css/styles.css"/>
-    <script type="text/javascript" src="../../static/forecast/lib/d3.js"></script>
-</head>
+
+
+<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
+     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
+     forecast for next day = today's temperature multiplied by its advection  --> 
+
 
 <h2>{{location.city_name}}</h2>
 
@@ -49,25 +49,21 @@ td, th {
                 {% endfor %}
 
 
-<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
-     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
-     forecast for next day = today's temperature multiplied by its advection  --> 
 
-<body>
    <table style="margin-left:50px;" border="3">
       <caption>City Climate Description</caption>
     <tr>
      <p><br> <th> windspeed </th></br> </p>
      <th> Today Temperature </th>
      <th> Gradient </th>
-     <th> Advection </th>
+    <!-- <th> Advection </th>-->
      <th> Tomorrow Forecast </th>
     </tr>
    <tr>
     <td>{{windspeed}} </td>
     <td> {{json_ctemp}} </td>
     <td> {{json_gradient}} </td>
-    <td> {{advection}} </td>
+    <!--<td> {{advection}} </td>-->
     <td> {{ json_temp}} </td>
 
    </tr>
@@ -79,7 +75,48 @@ td, th {
     <td>  </td>
    </tr>
   </table>
-</body>
+  
+<!--  
+     <table style="margin-left:45px;" border="1"; bgcolor :"#808000">
+    <caption>Current temperature in other cities</caption>
+    <tr>>
+  <p><br> <th> NY </th></br> </p>
+          <th> LA </th>
+          <th> HOU </th>
+          <th> MIA </th>
+          <th> PHI </th>
+          <th> Boston </th>
+          <th> SEA </th>
+          <th> DENVER </th>
+           <th> SF </th>
+    </tr>
+   <tr>
+    <td> {{jsonNYct}} </td>
+    <td> {{jsonLAct}} </td>
+    <td> {{jsonHOUct}} </td>
+    <td> {{jsonMIAct}} </td>
+    <td> {{jsonPHIct}} </td>
+    <td> {{jsonBOSct}} </td>
+    <td> {{jsonSEAct}} </td>
+    <td> {{jsonDENct}} </td>
+    <td> {{jsonSFct}} </td>
+   </tr>
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   
+   </tr>
+  </table>
+ -->1 
+  
+
 
 
 <!-- ticks line -->
@@ -122,18 +159,7 @@ td, th {
 
 
 
-<!--<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent windspeed=</strong> {{windspeed}}  </br> </p>
-//<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent temperature=</strong> {{json_ctemp}}  </br></p>
-//<p><br><strong>&nbsp&nbsp&nbsp&nbsptemperature gradient=</strong> {{temperaturegradient}}0.006  </br></p>
-//<p><br><strong>&nbsp&nbsp&nbsp&nbspadvection=</strong> {{advection}}  </br> </p>
-//<p><br><br><br></p>
-//<p><font size="3" color="blue"> <strong>&nbsp&nbsp&nbsp&nbspTomorrow forecast:</strong></font> </p>
 
-
-//<p><br><strong>&nbsp&nbsp&nbsp&nbspsurface temperature=</strong> {{json_temp}}  </br></p>
-//<p><br><br><br></p>
-
--->
 <script type="text/javascript">
     var width = 500,
         height = 500,
@@ -283,46 +309,6 @@ td, th {
 
 </script>
 
-
-<body>
-   <table style="margin-left:45px;" border="1"; bgcolor :"#808000">
-    <caption>Current temperature in other cities</caption>
-    <tr>>
-  <p><br> <th> NY </th></br> </p>
-          <th> LA </th>
-          <th> HOU </th>
-          <th> MIA </th>
-          <th> PHI </th>
-          <th> Boston </th>
-          <th> SEA </th>
-          <th> DENVER </th>
-           <th> SF </th>
-    </tr>
-   <tr>
-    <td> {{jsonNYct}} </td>
-    <td> {{jsonLAct}} </td>
-    <td> {{jsonHOUct}} </td>
-    <td> {{jsonMIAct}} </td>
-    <td> {{jsonPHIct}} </td>
-    <td> {{jsonBOSct}} </td>
-    <td> {{jsonSEAct}} </td>
-    <td> {{jsonDENct}} </td>
-    <td> {{jsonSFct}} </td>
-   </tr>
-   <tr>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-    <td>  </td>
-   
-   </tr>
-  </table>
-</body>
 
 
 

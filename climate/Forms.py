@@ -30,5 +30,15 @@ class CityForm(ModelForm):
     class Meta:
         model=Location
         fields = ['city_name']
+        
+        
+class ForecastForm(ModelForm):
+    
+   
+    city_name = forms.ChoiceField(choices=[(location.id, location.city_name) for location in Location.objects.all()])
+
+    class Meta:
+        model=Location
+        fields = ['city_name']
 
 
