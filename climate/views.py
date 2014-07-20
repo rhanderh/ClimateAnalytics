@@ -103,6 +103,10 @@ def ForecastGraphs(request, id):
       
     try:
         location = Location.objects.get(pk=id)
+        json_temp_range= request.session.get('start_date')
+        end= request.session.get('end_date')
+       
+        
         NY = Location.objects.get(city_name='New York')
         LA = Location.objects.get(city_name='Los Angeles')
         HOU = Location.objects.get(city_name='Houston')
@@ -149,7 +153,7 @@ def ForecastGraphs(request, id):
     except Location.DoesNotExist:
         raise Http404
     return render(request,'climate/forecastdetail.html',{'location': location, 'json_temp': json_temp , 'windspeed': json_wind[87:92],'advection': json_advection[81:85], 'json_ctemp' : json_ctemp[256:262],
-                                                          'json_gradient' : json_gradient, 'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262], 
+                                                          'json_gradient' : json_gradient, 'json_temp_range': json_temp_range, 'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262], 
                                                            'jsonHOUct': jsonHOUct[256:262], 'jsonMIAct': jsonMIAct[255:262],'jsonPHIct': jsonPHIct[256:262],
                                                            'jsonBOSct': jsonBOSct[256:262], 'jsonSEAct': jsonSEAct[256:262], 'jsonDENct': jsonDENct[255:262], 
                                                              })
