@@ -5,7 +5,7 @@ from django.core import serializers
 import json
 from django.http import Http404
 from django.views import generic
-from django.db.models import Max, Min
+from django.db.models import Max, Min, Avg
 
 from django import forms
 from django.shortcuts import render
@@ -16,7 +16,7 @@ from climate.Forms import CityHistForm, CityForm, ForecastForm
 
 import datetime
 from datetime import date
-from decimal import Decimal
+from decimal import *
 import pytz
 
 #json encoder for dictionary objects
@@ -127,72 +127,78 @@ def ForecastGraphs(request, id):
     
       
     try:
+        
+        #Set to high temp, imperial units
+        high_low = '2'
+        units = '2'
+        
         #Location for user selection
         location = Location.objects.get(pk=id)
-       
         
+        #Get the latest temperature
+        max_temp_time = location.temperature_set.all().aggregate(Max('timestamp'))
+        latest_temp = location.temperature_set.get(timestamp=max_temp_time['timestamp__max'])
         
-        #Locations for current temps in other cities
-        NY = Location.objects.get(city_name='New York')
-        LA = Location.objects.get(city_name='Los Angeles')
-        HOU = Location.objects.get(city_name='Houston')
-        MIA = Location.objects.get(city_name='Miami')
-        PHI = Location.objects.get(city_name='Philadelphia')
-        BOS = Location.objects.get(city_name='Boston')
-        SEA = Location.objects.get(city_name='Seattle')
-        DEN = Location.objects.get(city_name='Denver')
-        SF = Location.objects.get(city_name='San Francisco')
+        #Get the latest reference city temperature - Currently SF is always the ref city
+        sf = Location.objects.get(city_name='San Francisco')
+        sf_max_time = sf.temperature_set.all().aggregate(Max('timestamp'))
+        sf_temp = sf.temperature_set.get(timestamp=sf_max_time['timestamp__max'])
         
-        windspeed = WindSpeed.objects.get(pk=id)
-        advection = Advection.objects.get(pk=id)
+        #Get the latest windspeed
+        max_wind_time = location.windspeed_set.all().aggregate(Max('timestamp'))
+        latest_wind = location.windspeed_set.get(timestamp=max_wind_time['timestamp__max'])
         
-        #Serialization of the json temperature set
-        #Do Math on Python object first before converting to JSON
+        #Get the 5 day avg high temperature
+        last_5_days = max_temp_time['timestamp__max'] - datetime.timedelta(days=5)
+        avg_5_temp = location.temperature_set.filter(timestamp__gte=last_5_days).aggregate(Avg('temp_max_imperial'))
+        avg_5_temp_final = "{:.4f}".format(avg_5_temp['temp_max_imperial__avg'])
         
-        json_temp = serializers.serialize("json", location.temperature_set.all())
+        #Calculate the Gradient (Temp2-Temp1/Distance)
+        gradient = ((sf_temp.temp_max_imperial - latest_temp.temp_max_imperial) / 500)
+        gradient = "{:.4f}".format(gradient)
         
+        #Calculate the Advection
+        getcontext().prec=4
+        advection = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24))
         
-        #Don't grab the full temperature sets here - just grab the latest temp for today from the DB
-
-        jsonNY    = serializers.serialize("json", NY.temperature_set.all())        
-        jsonLA    = serializers.serialize("json", LA.temperature_set.all())
-        jsonHOU    = serializers.serialize("json", HOU.temperature_set.all())
-        jsonMIA    = serializers.serialize("json", MIA.temperature_set.all())
-        jsonPHI    = serializers.serialize("json", PHI.temperature_set.all())
-        jsonBOS    = serializers.serialize("json", BOS.temperature_set.all())
-        jsonSEA    = serializers.serialize("json", SEA.temperature_set.all())
-        jsonDEN    = serializers.serialize("json", DEN.temperature_set.all())
-        jsonSF    = serializers.serialize("json",  SF.temperature_set.all())
+        #Tomorrow's forecast based on the above
+        tomorrow = (latest_temp.temp_max_imperial + advection)
         
-        json_ctemp = serializers.serialize("json", location.temperature_set.all())
-
-        jsonNYct = serializers.serialize("json", NY.temperature_set.all())
-        jsonLAct = serializers.serialize("json", LA.temperature_set.all())
-        jsonHOUct = serializers.serialize("json", HOU.temperature_set.all())
-        jsonMIAct = serializers.serialize("json", MIA.temperature_set.all())
-        jsonPHIct = serializers.serialize("json", PHI.temperature_set.all())
-        jsonBOSct = serializers.serialize("json", BOS.temperature_set.all())
-        jsonSEAct = serializers.serialize("json", SEA.temperature_set.all())
-        jsonDENct = serializers.serialize("json", DEN.temperature_set.all())
-        jsonSFct = serializers.serialize("json", SF.temperature_set.all())
+        #Future Prediction - Modify when we add a user variable to select range
+        y = 2
+        temperature_f = tomorrow
+        advection_f = advection
+        #prep_list = []
+        temp_list = []
+        temp_dict = {}
         
-        try:
-           json_gradient = (float(json_temp[259:266])-float(5.000))/100
-        except ValueError:
-           json_gradient = (float(json_temp[256:262])-float(5.000))/100 
-  
-        json_wind = serializers.serialize("json", WindSpeed.objects.filter(location_id=id), fields=('wind_speed'), indent =3)
-        json_advection = serializers.serialize("json", Advection.objects.filter(location_id=id), fields=('advection'), indent =2)
-        try:
-           json_temp = float(json_temp[259:266])+float(json_advection[81:85])
-        except ValueError:
-           json_temp = float(json_temp[256:262])+float(json_advection[81:85])
+        while y < 6:
+            temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+            advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * y))
+            temperature_f = temperature_f + advection_f
+            temp_list.append(temp_dict.copy())
+            y = y + 1
+            
+        keys = ('temp_max_imperial')
+            
+        print(temp_list)
+        
+        #5 Day Historical Graph for the Location Data
+        five_temp = location.temperature_set.filter(timestamp__gte=last_5_days).order_by('timestamp')
+        json_temp = serializers.serialize("json", five_temp)
+        
+        #5 Day Forecast Data
+        json_forecast = json.dumps(temp_list, default=float)
+        max_json_time = json.dumps(max_temp_time['timestamp__max'], default=str)
+        
+        print(json_forecast) 
+        
     except Location.DoesNotExist:
         raise Http404
-    return render(request,'climate/forecastdetail.html',{'location': location, 'json_temp': json_temp , 'windspeed': json_wind[87:92],'advection': json_advection[81:85], 'json_ctemp' : json_ctemp[256:262],
-                                                          'json_gradient' : json_gradient, 'json_temp_range': json_temp_range, 'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262],'jsonNYct': jsonNYct[259:266],'jsonLAct': jsonLAct[256:262],'jsonHOUct': jsonHOUct[256:262], 'jsonMIAct': jsonMIAct[255:262],'jsonPHIct': jsonPHIct[256:262],
-                                                           'jsonBOSct': jsonBOSct[256:262], 'jsonSEAct': jsonSEAct[256:262], 'jsonDENct': jsonDENct[255:262], 
-                                                           })
+    return render(request,'climate/forecastdetail.html',{'location': location, 'latest_temp' : latest_temp, 'latest_wind' : latest_wind,
+                                                          'avg_5_temp_final' : avg_5_temp_final, 'gradient' : gradient, 'advection' : advection,
+                                                          'tomorrow' : tomorrow, 'json_temp' : json_temp, 'high_low' : high_low, 'units' : units,
+                                                           'json_forecast': json_forecast, 'max_temp_time' : max_json_time   })
 
     
 def HistoryGraph(id):
