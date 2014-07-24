@@ -6,16 +6,12 @@
 <!--<font size="3" color="blue"><strong> Increased aerosols in sulfate aerosols in the atmosphere could offset some of the warming resulting from
     increased greeenhouse gas concentration so there is a lot of uncertainty in temperature forecast"</strong> </font
 > -->
-<style>
-
- /* set the CSS */
-fill: #ffefd5;
-body { 
-font: 14px Arial;}
+<style> /* set the CSS */
+body { font: 14px Arial;}
 path {
 stroke: steelblue;
 stroke-width: 2;
-fill: #ffefd5;
+fill: none;
 }
 .axis path,
 .axis line {
@@ -54,7 +50,7 @@ td, th {
      wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
      forecast for next day = today's temperature multiplied by its advection  --> 
 
-   <table style="margin-left:50px;" border="3"; "color:#E6E6FA;" >
+   <table style="margin-left:50px;" border="3">
       <caption>City Climate Description</caption>
     <tr>
      <p><br> <th> windspeed </th></br> </p>
@@ -81,6 +77,47 @@ td, th {
   </table>
   
   
+     <table style="margin-left:45px;" border="1"; >
+    <caption>Current temperature in other cities</caption>
+    <tr>>
+  <p><br> <th> NY </th></br> </p>
+          <th> LA </th>
+          <th> HOU </th>
+          <th> MIA </th>
+          <th> PHI </th>
+          <th> Boston </th>
+          <th> SEA </th>
+          <th> DENVER </th>
+           <th> SF </th>
+    </tr>
+   <tr>
+    <td> {{temp.temp_max_imperial}} </td>
+    <td> {{jsonLAct}} </td>
+    <td> {{jsonSFct}} </td>
+    <td> {{jsonMIAct}} </td>
+    <td> {{jsonPHIct}} </td>
+    <td> {{jsonBOSct}} </td>
+    <td> {{jsonSEAct}} </td>
+    <td> {{jsonDENct}} </td>
+    <td> {{jsonSFct}} </td>
+   </tr>
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   
+   </tr>
+  </table>
+  
+  
+
+
 
 <!-- ticks line -->
  <div class="control-group">
@@ -98,7 +135,7 @@ td, th {
             .attr("width", width)
             .attr("height", height);
 
-    var scale = d3.scale.linear().domain([0, {{temp.temp_max_imperial}}]).range([0, axisWidth]);
+    var scale = d3.scale.linear().domain([0, {{json_ctemp}}]).range([0, axisWidth]);
 
     var axis = d3.svg.axis()
             .scale(scale)
