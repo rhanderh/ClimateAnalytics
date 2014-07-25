@@ -1,0 +1,540 @@
+
+{% extends 'climate/base.html' %}
+
+{% block body_block %}
+
+<<<<<<< HEAD
+<!--<font size="3" color="blue"><strong> Increased aerosols in sulfate aerosols in the atmosphere could offset some of the warming resulting from
+    increased greeenhouse gas concentration so there is a lot of uncertainty in temperature forecast"</strong> </font
+> -->
+<style>
+
+ /* set the CSS */
+fill: #ffefd5;
+body { 
+font: 14px Arial;}
+path {
+stroke: steelblue;
+stroke-width: 2;
+fill: #ffefd5;
+}
+.axis path,
+.axis line {
+fill: none;
+stroke: grey;
+opcaity: 0.7;
+stroke-width: 1;
+shape-rendering: crispEdges;
+background-color:#EBE8B4>
+}
+
+td, th {
+  padding: 1px 4px;
+}
+.line{
+
+  fill: none;
+  stroke: url (#line-gradient);
+  stroke-width: 2px;
+}
+</style
+
+
+=======
+>>>>>>> 9381ebd964af5108fa2736d3add7ad714e0f06ac
+
+<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
+     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
+     forecast for next day = today's temperature multiplied by its advection  --> 
+
+<<<<<<< HEAD
+     <h2><center>{{location.city_name}}</center></h2>
+
+     <ul>
+        <li>Curent Temperature: {{temp.temp_max_imperial}}</li>
+     </ul>
+=======
+<div class="container">
+<h2>{{location.city_name}} Forecasting</h2>
+
+<br>
+
+>>>>>>> 9381ebd964af5108fa2736d3add7ad714e0f06ac
+
+<!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
+     wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
+     forecast for next day = today's temperature multiplied by its advection  --> 
+
+<<<<<<< HEAD
+   <table style="margin-left:50px;" border="3"; "color:#E6E6FA;" >
+      <caption>City Climate Description</caption>
+=======
+ <div class="row">
+ 	
+ 	 <div class="col-md-12">
+<p>Currently all calculations are based on the hourly high temperature readings for a location in imperial units (farenheit)</p>
+
+<style>
+table {
+	border: solid;
+}
+
+td, th {
+	border: 1px solid;
+	padding: 0.5em;
+	
+}
+</style>	
+ 	
+   <table style="border: solid;">
+>>>>>>> 9381ebd964af5108fa2736d3add7ad714e0f06ac
+    <tr>
+   
+     <th> Latest Windspeed </th>
+     <th> 5 Day Avg High</th>
+     <th> Latest Temperature </th>
+     <th> Temperature Gradient </th>
+     <th> Next Day Advection </th>
+     <th> Next Day Forecast </th>
+    </tr>
+   <tr>
+    <td> {{latest_wind.wind_speed_imperial}} mph</td>
+    <td> {{avg_5_temp_final}}</td>
+    <td> {{latest_temp.temp_max_imperial}} f</td>
+    <td> {{gradient}} </td>
+    <td> {{advection}}  </td>
+    <td> <strong> {{tomorrow}} </strong></td>
+
+   </tr>
+<<<<<<< HEAD
+   <tr>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+    <td>  </td>
+   </tr>
+  </table>
+  
+  
+
+<!-- ticks line -->
+ <div class="control-group">
+=======
+
+  </table>
+ 	</div>
+ </div>
+ <br>
+ <div class="row">
+ 
+ <div class="col-md-6">
+
+<!-- Historical Visual -->
+<h4>Last 5 Days Hourly Temperature</h4>
+
+<div id="past_vis"></div>
+
+<script type = "text/javascript">
+
+			var w = 500;
+			var h = 200;
+			var padding = 40;
+			
+			//Dynamic, random dataset
+			var dataset = [];
+			var temp_set = {{ json_temp|safe }}
+			for (var i = 0; i < temp_set.length; i++) {
+    			var time = new Date(temp_set[i].fields.timestamp);
+    			var newNumber1 = time; 
+    			
+    			{% if high_low == '2'%}
+	    			{% if units == '1'%}
+	    				var newNumber2 = temp_set[i].fields.temp_max_metric;
+	    			{% elif units == '2'%}
+	    				var newNumber2 = temp_set[i].fields.temp_max_imperial;
+	    			{% else %}
+	    				var newNumber2 = temp_set[i].fields.temp_max;
+	    			{% endif %}
+	    		{% else %}
+	    			{% if units == '1'%}
+	    				var newNumber2 = temp_set[i].fields.temp_min_metric;
+	    			{% elif units == '2'%}
+	    				var newNumber2 = temp_set[i].fields.temp_min_imperial;
+	    			{% else %}
+	    				var newNumber2 = temp_set[i].fields.temp_min;
+	    			{% endif %}
+	    		{% endif %}
+	    		
+    			dataset.push([newNumber1, newNumber2]);
+			}
+			//Create scale functions
+			var xScale = d3.time.scale()
+								 .domain([d3.min(dataset, function(d) { return d[0]; }), d3.max(dataset, function(d) { return d[0]; })])
+								 .range([padding, w - padding * 2]);
+
+			var yScale = d3.scale.linear()
+								 .domain([d3.min(dataset, function(d) { return d[1]; }), d3.max(dataset, function(d) { return d[1]; })])
+								 .range([h - padding, padding]);
+								 
+			var rScale = d3.scale.linear()
+							.domain([0, d3.max(dataset, function(d) {return d[1]; })])
+							.range([2, 5]);
+							
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+						.ticks(8);
+						
+			var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+                  
+            //Line Variable for Line Graph
+            var lineFunc = d3.svg.line()
+            	.x(function(d) {return xScale(d[0]); })
+            	.y(function(d) {return yScale(d[1]); })
+            	.interpolate('linear');
+	
+			//Create SVG element
+			var vis = d3.select("#past_vis")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+						
+
+    		vis.append("g")
+    			.attr("class","axis") //Assign "axis" class
+    			.attr("transform", "translate(0," + (h - padding) + ")")
+    			.call(xAxis);
+    			
+    		//Create Y axis
+			vis.append("g")
+    			.attr("class", "axis")
+    			.attr("transform", "translate(" + padding + ",0)")
+    			.call(yAxis);
+    			
+    		vis.append('svg:path')
+  				.attr('d', lineFunc(dataset))
+  				.attr('stroke', 'blue')
+  				.attr('stroke-width', 2)
+  				.attr('fill', 'none');
+    			
+    		
+    				
+			
+
+</script>
+
+>>>>>>> 9381ebd964af5108fa2736d3add7ad714e0f06ac
+</div>
+
+ <div class="col-md-6">
+
+<!-- Next 5 Days Visual -->
+<h4>Next 5 Days - Daily Avg Temperature Prediction</h4>
+
+<div id="predict_vis"></div>
+
+<script type = "text/javascript">
+
+			var w = 500;
+			var h = 200;
+			var padding = 40;
+			
+			//Dynamic, random dataset
+			//FIX NEEDED -- CURRENTLY THIS ASSUMES NEXT 5 DAYS BASED ON TODAY, NOT BASED ON DATABASE MAX TIMESTAMP
+			var dataset = [];
+			var temp_set = {{ json_forecast|safe }}
+			for (var i = 0; i < temp_set.length; i++) {
+    			var time = new Date()
+    			time.setDate(time.getDate() + (i+1));
+    			var newNumber1 = time; 
+    			
+    			{% if high_low == '2'%}
+	    			{% if units == '1'%}
+	    				var newNumber2 = temp_set[i].fields.temp_max_metric;
+	    			{% elif units == '2'%}
+	    				var newNumber2 = temp_set[i].temp_max_imperial;
+	    			{% else %}
+	    				var newNumber2 = temp_set[i].fields.temp_max;
+	    			{% endif %}
+	    		{% else %}
+	    			{% if units == '1'%}
+	    				var newNumber2 = temp_set[i].fields.temp_min_metric;
+	    			{% elif units == '2'%}
+	    				var newNumber2 = temp_set[i].fields.temp_min_imperial;
+	    			{% else %}
+	    				var newNumber2 = temp_set[i].fields.temp_min;
+	    			{% endif %}
+	    		{% endif %}
+	    		
+    			dataset.push([newNumber1, newNumber2]);
+			}
+			//Create scale functions
+			var xScale = d3.time.scale()
+								 .domain([d3.min(dataset, function(d) { return d[0]; }), d3.max(dataset, function(d) { return d[0]; })])
+								 .range([padding, w - padding * 2]);
+
+			var yScale = d3.scale.linear()
+								 .domain([d3.min(dataset, function(d) { return d[1]; }), d3.max(dataset, function(d) { return d[1]; })])
+								 .range([h - padding, padding]);
+								 
+			var rScale = d3.scale.linear()
+							.domain([0, d3.max(dataset, function(d) {return d[1]; })])
+							.range([2, 5]);
+							
+			var xAxis = d3.svg.axis()
+						.scale(xScale)
+						.orient("bottom")
+						.ticks(8);
+						
+			var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);
+                  
+            //Line Variable for Line Graph
+            var lineFunc = d3.svg.line()
+            	.x(function(d) {return xScale(d[0]); })
+            	.y(function(d) {return yScale(d[1]); })
+            	.interpolate('linear');
+	
+			//Create SVG element
+			var vis = d3.select("#predict_vis")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+						
+
+    		vis.append("g")
+    			.attr("class","axis") //Assign "axis" class
+    			.attr("transform", "translate(0," + (h - padding) + ")")
+    			.call(xAxis);
+    			
+    		//Create Y axis
+			vis.append("g")
+    			.attr("class", "axis")
+    			.attr("transform", "translate(" + padding + ",0)")
+    			.call(yAxis);
+    			
+    		vis.append('svg:path')
+  				.attr('d', lineFunc(dataset))
+  				.attr('stroke', 'blue')
+  				.attr('stroke-width', 2)
+  				.attr('fill', 'none');
+    			
+    		
+    				
+			
+
+</script>
+</div>
+  </div>
+<!--
+  <script type="text/javascript">
+    var height = 300,
+        width = 500,
+        margin = 50,
+        axisWidth = width - 2 * margin;
+
+    var svg = d3.select("body").append("svg")
+            .attr("class", "axis")
+            .attr("width", width)
+            .attr("height", height);
+
+    var scale = d3.scale.linear().domain([0, {{temp.temp_max_imperial}}]).range([0, axisWidth]);
+
+    var axis = d3.svg.axis()
+            .scale(scale)
+            .ticks(5)
+            .tickSubdivide(5) // <-A
+            .tickPadding(10) // <-B
+            .tickFormat(function(v){ // <-C
+                return v + "%";
+            });
+
+    svg.append("g")
+        .attr("transform", function(){
+            return "translate(" + margin + "," + margin + ")";
+        })
+        .call(axis);
+</script>
+
+       <caption>Dynamic Measurement</caption>
+
+
+
+<!--<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent windspeed=</strong> {{windspeed}}  </br> </p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspcurrent temperature=</strong> {{json_ctemp}}  </br></p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbsptemperature gradient=</strong> {{temperaturegradient}}0.006  </br></p>
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspadvection=</strong> {{advection}}  </br> </p>
+//<p><br><br><br></p>
+//<p><font size="3" color="blue"> <strong>&nbsp&nbsp&nbsp&nbspTomorrow forecast:</strong></font> </p>
+
+
+//<p><br><strong>&nbsp&nbsp&nbsp&nbspsurface temperature=</strong> {{json_temp}}  </br></p>
+//<p><br><br><br></p>
+
+-->
+
+<!--
+<script type="text/javascript">
+    var width = 500,
+        height = 500,
+        margin = 60,
+        x = d3.scale.linear() // <-A
+            .domain([0, 10])
+            .range([margin, width - margin]),
+        y = d3.scale.linear() // <-B
+            .domain([0, 10])
+            .range([height - margin, margin]);
+ 
+    var parseDate = d3.time.format("%d-%b-%y").parse;
+
+   //
+  
+    var fTemp = {{json_temp}}/10;
+    var cTemp = {{json_ctemp}}/10;
+    
+    var data = [ // <-C
+        [
+            {x: 1, y: cTemp},{x: 2, y:fTemp},{x: 3, y: 8.3},
+            {x: 4, y: 8.2},{x: 5, y:8.3},{x: 6, y: 8.4},
+            {x: 7, y: 8.2},{x: 8, y: 8.3},{x: 9, y: 8.2}
+        ],
+
+        d3.range(10).map(function(i){
+            return {x: 0, y: 0};
+        })
+    ];
+
+    var line = d3.svg.line() // <-D
+            .x(function(d){return x(d.x);})
+            .y(function(d){return y(d.y);});
+
+    //var line = d3.svg.line() // <-D
+    //        .interpolate("basis")
+    //        .x(function(d){return x(d.date);})
+    //        .y(function(d){return y(d.close);}); 
+
+    var svg = d3.select("body").append("svg");
+
+    svg.attr("height", height)
+        .attr("width", width);
+
+     svg.selectAll("path")
+            .data(data)
+        .enter()
+            .append("path") // <-E
+            .attr("class", "line")
+            .attr("d", function(d){return line(d);}); // <-F
+
+    renderAxes(svg);
+
+/*    svg.append("linearGradient")
+       .attr("id", "line-gradient")
+       .attr("gradientUnits", "userSpaceOnUse")
+       .attr("x1", 0).attr("y",y(0))
+       .attr(:x2",0).attr("y2",y(1000))
+     .selectAll("stop")
+       .data([
+         {offset: "0%", color: "red"},
+          {offset: "30%", color: "red"},
+          {offset: "45%", color: "black"},
+           {offset: "55%", color: "black"},
+            {offset: "60%", color: "lawngreen"},
+            {offset: "100%", color: "lawngreen"},
+        ])
+     .enter().append("stop")
+         .attr("offset",function(d) { return d.offset;})
+         .attr("stop-color",function(d) { return d.color;});
+*/
+
+    function renderAxes(svg){ // <-G
+        var xAxis = d3.svg.axis()
+                .scale(d3.scale.linear()
+                    .range([0, quadrantWidth()]))
+                .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+                .scale(d3.scale.linear()
+                    .range([quadrantHeight(), 0]))
+                .orient("left");
+
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", function(){
+                return "translate(" + xStart()
+                    + "," + yStart() + ")";
+            })
+            .call(xAxis);
+
+
+         svg.append("text")
+            .attr("x", 240)
+            .attr("y", 480) 
+            .style("tetx-anchor","middle")
+            .text("Daily Forecast"); 
+
+         svg.append("text")
+            .attr("x", 240)
+            .attr("y", 497)
+            .style("text-anchor","middle")
+            .text("");
+
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", function(){
+                return "translate(" + xStart()
+                    + "," + yEnd() + ")";
+            })
+            .call(yAxis);
+
+         svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y",0 - margin.left)
+            .attr("x",0 - (height/2))
+            .attr("dy", "1em")  
+            .style("text-anchor","middle")
+            .text("Temperature");
+
+  
+    }
+
+    function xStart(){
+       return margin;
+    }
+
+    function yStart(){
+        return height - margin;
+    }
+
+    function xEnd(){
+        return width - margin;
+    }
+
+    function yEnd(){
+        return margin;
+    }
+
+    function quadrantWidth(){
+        return width - 2 * margin;
+    }
+
+    function quadrantHeight(){
+        return height - 2 * margin;
+    }
+
+</script>
+
+
+-->
+
+</div>
+
+
+{% endblock %}
+
+
