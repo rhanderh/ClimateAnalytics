@@ -1,0 +1,50 @@
+
+{% extends 'climate/base.html' %}
+
+{% block body_block %}
+
+
+<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['City', '30 Day Avg Temp'],
+          ['New York',  {{NY_avg}} ],
+          ['Chicago',  {{CHI_avg}} ],
+          ['Los Angeles',  {{LA_avg}} ],
+          ['Houston', {{HOU_avg}} ],
+          ['Miami', {{MIA_avg}}],
+          ['Boston', {{BOS_avg}}],
+          ['Seattle', {{SEA_avg}}],
+          ['San Francisco', {{SF_avg}}],
+          ['Denver', {{DNV_avg}}],
+          ['Pittsburgh', {{PIT_avg}}] 
+        ]);
+
+        var options = {
+          //title: 'Company Performance',
+          //vAxis: {title: 'City',  titleTextStyle: {color: 'red'}}
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+    
+<div class="container">
+	
+	
+
+<h2>Last 30-Day Avg Temperature Comparison for Major US Cities</h2>
+
+
+
+<div id ="chart_div" style="width: 90%; height: 600px;">
+</div>
+</div>
+
+
+
+
+{% endblock %}
