@@ -32,6 +32,80 @@ class MyEncoder1(json.JSONEncoder):
     
 # Create your views here.
 
+def CityCompareGraphs(request):
+    try:
+        #load the cities for the graph
+        NY = Location.objects.get(city_name='New York')
+        CHI = Location.objects.get(city_name='Chicago')
+        LA = Location.objects.get(city_name='Los Angeles')
+        HOU = Location.objects.get(city_name='Houston')
+        MIA = Location.objects.get(city_name='Miami')
+        BOS = Location.objects.get(city_name='Boston')
+        SEA = Location.objects.get(city_name='Seattle')
+        SF = Location.objects.get(city_name='San Francisco')
+        DNV = Location.objects.get(city_name='Denver')
+        PIT = Location.objects.get(city_name='Pittsburgh')
+        
+        #get the max times for each
+        NY_max_time = NY.temperature_set.all().aggregate(Max('timestamp'))
+        CHI_max_time = CHI.temperature_set.all().aggregate(Max('timestamp'))
+        LA_max_time = LA.temperature_set.all().aggregate(Max('timestamp'))
+        
+        #Last 30 for each
+        NY_last_30 = NY_max_time['timestamp__max'] - datetime.timedelta(days=30)
+        CHI_last_30 = CHI_max_time['timestamp__max'] - datetime.timedelta(days=30)
+        LA_last_30 = LA_max_time['timestamp__max'] - datetime.timedelta(days=30)
+        
+        #calculate the last 30 days temps for each
+        NY_30 = NY.temperature_set.filter(timestamp__gte=NY_last_30).order_by('timestamp')
+        CHI_30 = CHI.temperature_set.filter(timestamp__gte=CHI_last_30).order_by('timestamp')
+        LA_30 = LA.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        HOU_30 = HOU.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        MIA_30 = MIA.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        BOS_30 = BOS.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        SEA_30 = SEA.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        SF_30 = SF.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        DNV_30 = DNV.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        PIT_30 = PIT.temperature_set.filter(timestamp__gte=LA_last_30).order_by('timestamp')
+        
+        #Calculate the 30 day avg for each
+        NY_avg_pre = NY_30.aggregate(Avg('temp_max_imperial'))
+        NY_avg = "{:.4f}".format(NY_avg_pre['temp_max_imperial__avg'])
+        
+        CHI_avg_pre = CHI_30.aggregate(Avg('temp_max_imperial'))
+        CHI_avg = "{:.4f}".format(CHI_avg_pre['temp_max_imperial__avg'])
+        
+        LA_avg_pre = LA_30.aggregate(Avg('temp_max_imperial'))
+        LA_avg = "{:.4f}".format(LA_avg_pre['temp_max_imperial__avg'])
+        
+        HOU_avg_pre = HOU_30.aggregate(Avg('temp_max_imperial'))
+        HOU_avg = "{:.4f}".format(HOU_avg_pre['temp_max_imperial__avg'])
+        
+        MIA_avg_pre = MIA_30.aggregate(Avg('temp_max_imperial'))
+        MIA_avg = "{:.4f}".format(MIA_avg_pre['temp_max_imperial__avg'])
+        
+        BOS_avg_pre = BOS_30.aggregate(Avg('temp_max_imperial'))
+        BOS_avg = "{:.4f}".format(BOS_avg_pre['temp_max_imperial__avg'])
+        
+        SEA_avg_pre = SEA_30.aggregate(Avg('temp_max_imperial'))
+        SEA_avg = "{:.4f}".format(SEA_avg_pre['temp_max_imperial__avg'])
+        
+        SF_avg_pre = SF_30.aggregate(Avg('temp_max_imperial'))
+        SF_avg = "{:.4f}".format(SF_avg_pre['temp_max_imperial__avg']) 
+        
+        DNV_avg_pre = DNV_30.aggregate(Avg('temp_max_imperial'))
+        DNV_avg = "{:.4f}".format(DNV_avg_pre['temp_max_imperial__avg'])
+        
+        PIT_avg_pre = PIT_30.aggregate(Avg('temp_max_imperial'))
+        PIT_avg = "{:.4f}".format(PIT_avg_pre['temp_max_imperial__avg'])
+        
+    except Location.DoesNotExist:
+        raise Http404
+    return render(request, 'climate/compare.html', {'NY_avg' : NY_avg, 'LA_avg' : LA_avg, 'CHI_avg' : CHI_avg, 'HOU_avg' : HOU_avg,
+                                                    'MIA_avg' : MIA_avg, 'BOS_avg' : BOS_avg, 'SEA_avg' : SEA_avg, 'SF_avg' : SF_avg,
+                                                    'DNV_avg' : DNV_avg, 'PIT_avg' : PIT_avg})
+        
+
 def CityHistoryGraphs(request, id, units, high_low, start_date, end_date):
     try:
         location = Location.objects.get(pk=id)

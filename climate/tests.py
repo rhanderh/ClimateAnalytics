@@ -182,3 +182,11 @@ class ViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
         
+    def test_compare_view(self):
+        """
+        Validate successful load of the homepage
+        """
+        response = self.client.get(reverse('climate:compare'))
+        self.assertEqual(response.status_code, 200)
+        # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
+        

@@ -42,37 +42,6 @@
       </div>
 
 </div>
-    
-<!--
- 	
-
-
-<p>List of locations and all of the associated daily high temperatures in imperial.  This is a test.</p>
-
-
-   {% for location in all_locations_list %}
-		<h2>{{ location.city_name }}</h2>
-		<ul>
-		{% for temp in location.temperature_set.all %}
-		<li>{{ temp.temp_max_imperial }}</li>
-		</ul>
-	{% endfor %}
-{% endfor %}
-
-
-<p>List of locations and all of the associated daily wind speeds.  This is a test.</p>
-
-
-	{% for location in all_locations_list %}
-		<h2>{{ location.city_name }}</h2>
-		<ul>
-		{% for wind in location.windspeed_set.all %}
-		<li>{{ wind.wind_speed }}</li>
-		</ul>
-	{% endfor %}
-{% endfor %}
-
--->
 
 {% endblock %}
 
