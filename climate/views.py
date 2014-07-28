@@ -230,16 +230,24 @@ def ForecastGraphs(request, id):
         avg_5_temp_final = "{:.4f}".format(avg_5_temp['temp_max_imperial__avg'])
         
         #Calculate the Gradient (Temp2-Temp1/Distance)
-        gradient = ((sf_temp.temp_max_imperial - latest_temp.temp_max_imperial) / 500)
+        gradient = -((sf_temp.temp_max_imperial - latest_temp.temp_max_imperial) / 500)
         gradient = "{:.4f}".format(gradient)
         
+        print(gradient)
+
         #Calculate the Advection
         getcontext().prec=4
         advection = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24))
-        
+      
+        print ('initial advection is :')
+        print (advection) 
+ 
         #Tomorrow's forecast based on the above
         tomorrow = (latest_temp.temp_max_imperial + advection)
-        
+        print(latest_temp.temp_max_imperial)
+        print(tomorrow)
+
+
         #Future Prediction - Modify when we add a user variable to select range
         y = 2
         temperature_f = tomorrow
@@ -248,12 +256,69 @@ def ForecastGraphs(request, id):
         temp_list = []
         temp_dict = {}
         
-        while y < 6:
-            temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-            advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * y))
-            temperature_f = temperature_f + advection_f
-            temp_list.append(temp_dict.copy())
-            y = y + 1
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * y)) + 6  
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f + 6 
+        print ('temperature_f is:')
+        print (temperature_f)  
+        temp_list.append(temp_dict.copy())
+            
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 5 
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f  + 5 
+        print ('temperature_f is:')
+        print (temperature_f) 
+        temp_list.append(temp_dict.copy())
+
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 4    
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f + 4   
+        print ('temperature_f is:')
+        print (temperature_f)    
+        temp_list.append(temp_dict.copy())
+
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 3 
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f + 3
+        print ('temperature_f is:')
+        print (temperature_f)
+        temp_list.append(temp_dict.copy())
+
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 2 
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f + 2
+        print ('temperature_f is:')
+        print (temperature_f)
+        temp_list.append(temp_dict.copy())
+
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 1 
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f + 1
+        print ('temperature_f is:')
+        print (temperature_f)
+        temp_list.append(temp_dict.copy())
+
+        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) 
+        print ('advection is:')
+        print (advection_f)
+        temperature_f = temperature_f + advection_f 
+        print ('temperature_f is:')
+        print (temperature_f)
+        temp_list.append(temp_dict.copy())
+
             
         keys = ('temp_max_imperial')
             
@@ -266,9 +331,15 @@ def ForecastGraphs(request, id):
         #5 Day Forecast Data
         json_forecast = json.dumps(temp_list, default=float)
         max_json_time = json.dumps(max_temp_time['timestamp__max'], default=str)
-        
+      
+ 
+        print(max_json_time) 
         print(json_forecast) 
-        
+        print(temp_list)    
+   
+        print('hello')
+        print(json_forecast)
+ 
     except Location.DoesNotExist:
         raise Http404
     return render(request,'climate/forecastdetail.html',{'location': location, 'latest_temp' : latest_temp, 'latest_wind' : latest_wind,
