@@ -1,17 +1,10 @@
 
 {% extends 'climate/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Lines</title>
-    <link rel="stylesheet" type="text/css" href="../../css/styles.css"/>
-    <script type="text/javascript" src="../../static/forecast/lib/d3.js"src="></script>
-</head>
-
 
 {% block body_block %}
 
-<body style="background-color:#F0C84D;">
+<body>
 
 <!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
      wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
@@ -77,7 +70,7 @@ td {
  <div class="col-md-6">
 
 <!-- Historical Visual -->
-<h4><font size="3" color="green"><strong>Last 5 Days Hourly Temperature )</strong> </font></h4>
+<h4><font size="3" color="green"><strong>Last 5 Days Hourly Temperature</strong> </font></h4>
 
 <div id="past_vis"></div>
 
@@ -190,7 +183,7 @@ td {
 			var temp_set = {{ json_forecast|safe }}
 			for (var i = 0; i < temp_set.length; i++) {
     			var time = new Date()
-    			time.setDate(time.getDate() + (i+1));
+    			time.setDate(time.getDate() + (i));
     			var newNumber1 = time; 
     			
     			{% if high_low == '2'%}
@@ -219,7 +212,7 @@ td {
 								 .range([padding, w - padding * 2]);
 
 			var yScale = d3.scale.linear()
-								 .domain([d3.min(dataset, function(d) { return d[1]; }), d3.max(dataset, function(d) { return d[1]; })])
+								 .domain([d3.max(dataset, function(d) { return d[1] ; }), d3.min(dataset, function(d) { return d[1]; })])
 								 .range([h - padding, padding]);
 								 
 			var rScale = d3.scale.linear()
@@ -269,7 +262,7 @@ td {
 			
 </script> 
 
-
+<!--
 <script type="text/javascript">
 
     var width = 500,
@@ -390,10 +383,10 @@ td {
 
     function quadrantHeight(){
         return height - 2 * margin;
-    }
+    }lo
 
 </script>
-
+-->
 
 
 {% endblock %}

@@ -32,16 +32,58 @@
       }
     </script>
     
+ <script type='text/javascript'>
+     google.load('visualization', '1', {'packages': ['geochart']});
+     google.setOnLoadCallback(drawMarkersMap);
+
+      function drawMarkersMap() {
+      var data = google.visualization.arrayToDataTable([
+        ['City',   '30 Day Avg', '30 Day Avg'],
+        ['New York',      {{NY_avg}} ,    {{NY_avg}}],
+        ['Chicago',  {{CHI_avg}},  {{CHI_avg}}],
+        ['Los Angeles',  {{LA_avg}}, {{LA_avg}} ],
+        ['Houston', {{HOU_avg}},  {{HOU_avg}} ],
+        ['Miami', {{MIA_avg}}, {{MIA_avg}}],
+        ['Boston', {{BOS_avg}}, {{BOS_avg}}],
+        ['Seattle', {{SEA_avg}}, {{SEA_avg}}],
+        ['San Francisco', {{SF_avg}}, {{SF_avg}}],
+        ['Denver', {{DNV_avg}}, {{DNV_avg}}],
+        ['Pittsburgh', {{PIT_avg}}, {{PIT_avg}}] 
+      ]);
+
+      var options = {
+        region: 'US',
+        displayMode: 'markers',
+        colorAxis: {colors: ['yellow', 'red']}
+      };
+
+      var chart = new google.visualization.GeoChart(document.getElementById('chart_div2'));
+      chart.draw(data, options);
+    };
+    </script>
 <div class="container">
 	
 	
+
+
 
 <h2>Last 30-Day Avg Temperature Comparison for Major US Cities</h2>
 
 
 
+<div id ="chart_div2" style="width: 90%; height: 600px;">
+</div>
+
+
+
 <div id ="chart_div" style="width: 90%; height: 600px;">
 </div>
+
+
+
+
+
+
 </div>
 
 
