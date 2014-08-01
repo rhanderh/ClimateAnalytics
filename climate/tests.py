@@ -184,9 +184,38 @@ class ViewTest(TestCase):
         
     def test_compare_view(self):
         """
-        Validate successful load of the homepage
+        Validate successful load of the historical comparison view
         """
         response = self.client.get(reverse('climate:compare'))
         self.assertEqual(response.status_code, 200)
         # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
+        
+    def test_history_form_view(self):
+        """
+        Validate successful load of the historical form
+        """
+        response = self.client.get(reverse('climate:history'))
+        self.assertEqual(response.status_code, 200)
+        # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
+        
+    def test_forecast_form_view(self):
+        """
+        Validate successful load of the forecast form
+        """
+        response = self.client.get(reverse('climate:forecast'))
+        self.assertEqual(response.status_code, 200)
+        # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
+        
+    def test_forecast_detail_view(self):
+        """
+        Validate successful load of the forecast details view
+        """
+        city = '1'
+        response = self.client.get(reverse('climate:forecastdetail', args=(city,)))
+        self.assertEqual(response.status_code, 200)
+        # self.assertQuerysetEqual(response.context['latest_poll_list'], [])
+        
+        
+        
+        
         
