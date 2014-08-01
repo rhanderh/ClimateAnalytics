@@ -1,8 +1,36 @@
 {% extends 'climate/base.html' %}
 
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1"/>
+    <title>Albers USA with TopoJSON</title>
+    <link rel="stylesheet" type="text/css" href="../../css/styles.css"/>
+    <script type="text/javascript" src="../../climate/static/forecast/lib/d3.js"></script>
+    <script type="text/javascript" src="../../climate/static/forecast/lib/topojson.js"></script>
+
+    <style>
+        path {
+            fill: #ccc;
+            stroke: #fff;
+            stroke-width: .5px;
+        }
+
+        path:hover {
+            fill: red;
+        }
+    </style>
+</head>
+
+
+
+
+
+
 {% block body_block %}
 
-
+<body style="background-color:#F0C84D;">
 
  <div class="container">
  	
@@ -18,7 +46,10 @@
     <input type="submit" value="Submit" />
 </form>
 
-
 </div>
+
+
+
+
 
 {% endblock %}
