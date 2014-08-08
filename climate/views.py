@@ -19,6 +19,11 @@ from datetime import date
 from decimal import *
 import pytz
 
+import os
+import random
+import re
+import sys
+
 #json encoder for dictionary objects
 class MyEncoder1(json.JSONEncoder):
     def default(self, obj):
@@ -230,7 +235,7 @@ def ForecastGraphs(request, id):
         avg_5_temp_final = "{:.4f}".format(avg_5_temp['temp_max_imperial__avg'])
         
         #Calculate the Gradient (Temp2-Temp1/Distance)
-        gradient = -((sf_temp.temp_max_imperial - latest_temp.temp_max_imperial) / 500)
+        gradient = -((sf_temp.temp_max_imperial - latest_temp.temp_max_imperial) / 1500)
         gradient = "{:.4f}".format(gradient)
         
         print(gradient)
@@ -244,86 +249,33 @@ def ForecastGraphs(request, id):
  
         #Tomorrow's forecast based on the above
         tomorrow = (latest_temp.temp_max_imperial + advection)
-        print(latest_temp.temp_max_imperial)
-        print(tomorrow)
-
 
         #Future Prediction - Modify when we add a user variable to select range
-        y = 2
         temperature_f = tomorrow
-        advection_f = advection
+        temperature_i = latest_temp.temp_max_imperial
         #prep_list = []
         temp_list = []
         temp_dict = {}
         
         temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * y)) + 6  
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f + 6 
-        print ('temperature_f is:')
-        print (temperature_f)  
+        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(48))
+        advection_n = random.uniform(float(advection),float(advection_f ))
+        temperature_f = float(temperature_f) + float(advection_n)  
         temp_list.append(temp_dict.copy())
-            
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 5 
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f  + 5 
-        print ('temperature_f is:')
-        print (temperature_f) 
-        temp_list.append(temp_dict.copy())
-
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 4    
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f + 4   
-        print ('temperature_f is:')
-        print (temperature_f)    
-        temp_list.append(temp_dict.copy())
-
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 3 
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f + 3
-        print ('temperature_f is:')
-        print (temperature_f)
-        temp_list.append(temp_dict.copy())
-
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 2 
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f + 2
-        print ('temperature_f is:')
-        print (temperature_f)
-        temp_list.append(temp_dict.copy())
-
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) + 1 
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f + 1
-        print ('temperature_f is:')
-        print (temperature_f)
-        temp_list.append(temp_dict.copy())
-
-        temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
-        advection_f = (latest_wind.wind_speed_imperial * Decimal(gradient) * Decimal(24 * 1)) 
-        print ('advection is:')
-        print (advection_f)
-        temperature_f = temperature_f + advection_f 
-        print ('temperature_f is:')
-        print (temperature_f)
-        temp_list.append(temp_dict.copy())
+        
+        for i in range(5):    
+            temp_dict['temp_max_imperial'] = "{:.4f}".format(temperature_f)
+            advection_n = random.uniform(float(advection),float(advection_f ))
+            print ('advection is:')
+            print ("%.2f" % advection_n)
+            temperature_f = temperature_f + advection_n  
+            print ('temperature_f is:')
+            print (temperature_f) 
+            temp_list.append(temp_dict.copy())
 
             
         keys = ('temp_max_imperial')
             
-        print(temp_list)
-        
         #5 Day Historical Graph for the Location Data
         five_temp = location.temperature_set.filter(timestamp__gte=last_5_days).order_by('timestamp')
         json_temp = serializers.serialize("json", five_temp)
@@ -333,19 +285,13 @@ def ForecastGraphs(request, id):
         max_json_time = json.dumps(max_temp_time['timestamp__max'], default=str)
       
  
-        print(max_json_time) 
-        print(json_forecast) 
-        print(temp_list)    
-   
-        print('hello')
-        print(json_forecast)
- 
     except Location.DoesNotExist:
         raise Http404
     return render(request,'climate/forecastdetail.html',{'location': location, 'latest_temp' : latest_temp, 'latest_wind' : latest_wind,
                                                           'avg_5_temp_final' : avg_5_temp_final, 'gradient' : gradient, 'advection' : advection,
                                                           'tomorrow' : tomorrow, 'json_temp' : json_temp, 'high_low' : high_low, 'units' : units,
-                                                           'json_forecast': json_forecast, 'max_temp_time' : max_json_time   })
+                                                           'json_forecast': json_forecast, 'max_temp_time' : max_json_time, 'forecast' : temp_list   })
+
 
     
 def HistoryGraph(id):

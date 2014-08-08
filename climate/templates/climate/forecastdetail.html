@@ -6,6 +6,10 @@
 
 <body>
 
+<!-- Google Chart Add-In for Columns -->	
+
+
+
 <!-- temperature gradient is the ratio between change in temperature between 2 close cities and distance in miles between cities
      wind velocity multiplied by temperature gradient and by 24 hours = advection for next 24 hours
      forecast for next day = today's temperature multiplied by its advection  --> 
@@ -20,7 +24,7 @@
  <div class="row">
  	
  	 <div class="col-md-12">
-<p><font size="3" color="blue"><strong> Currently all calculations are based on the hourly high temperature readings for a location in imperial units (farenheit)</strong> </font></p>
+<p>Currently all calculations are based on the hourly high temperature readings for a location in imperial units (farenheit)</p>
 
 <style>
 table {
@@ -70,7 +74,7 @@ td {
  <div class="col-md-6">
 
 <!-- Historical Visual -->
-<h4><font size="3" color="green"><strong>Last 5 Days Hourly Temperature</strong> </font></h4>
+<h4>Last 5 Days Hourly High Temperature</h4>
 
 <div id="past_vis"></div>
 
@@ -167,9 +171,37 @@ td {
 
  <div class="col-md-6">
 
-<h4><font size="3" color="brown">Next 5 Days - Daily Avg Temperature Prediction</strong> </font></h4>
+<h4>Next 5 Days - Daily Avg High Temp Prediction</h4>
 
 <div id="predict_vis"></div>
+
+    <div id="chart_div" style="width: 500px; height: 200px;"></div>
+
+    <script type="text/javascript">
+   
+	  var temp_set = {{ json_forecast|safe }};
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Day', 'Temperature'],
+          ['1',  parseFloat(temp_set[0].temp_max_imperial)],
+          ['2',  parseFloat(temp_set[1].temp_max_imperial)],
+          ['3',  parseFloat(temp_set[2].temp_max_imperial)],
+          ['4',  parseFloat(temp_set[3].temp_max_imperial)],
+          ['5', parseFloat(temp_set[4].temp_max_imperial)]]);
+
+        var options = {
+         // title: 'Company Performance',
+          hAxis: {title: 'Days Ahead', titleTextStyle: {color: 'black'}},
+          legend: {position: 'none'}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+    <!--
 
 <script type = "text/javascript">
 
@@ -212,7 +244,7 @@ td {
 								 .range([padding, w - padding * 2]);
 
 			var yScale = d3.scale.linear()
-								 .domain([d3.max(dataset, function(d) { return d[1] ; }), d3.min(dataset, function(d) { return d[1]; })])
+								 .domain([d3.min(dataset, function(d) { return d[1] ; }), d3.max(dataset, function(d) { return d[1]; })])
 								 .range([h - padding, padding]);
 								 
 			var rScale = d3.scale.linear()
@@ -261,7 +293,7 @@ td {
     			
 			
 </script> 
-
+-->
 <!--
 <script type="text/javascript">
 
@@ -387,7 +419,7 @@ td {
 
 </script>
 -->
-
+</div>
 
 {% endblock %}
 
